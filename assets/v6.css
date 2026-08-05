@@ -18,15 +18,22 @@
   --v5-ochre-light: #ffe066;
 }
 
-html, body {
+html {
   overflow-x: clip;
-  /* Mismo color que el footer: evita franja crema debajo del pie */
   background: #2c0d14;
 }
+body {
+  /* overflow-x en body rompe position:fixed del banner de cookies en algunos navegadores */
+  overflow-x: visible;
+  background: #2c0d14;
+  margin: 0;
+}
 .public-shell { background: var(--v6-paper); }
-/* No empujar el shell con padding crema bajo el footer: el espacio lo da el propio pie */
-.public-shell.cookie-open { padding-bottom: 0; }
-.public-shell.cookie-open .footer { padding-bottom: 150px; }
+.public-shell.cookie-open,
+.public-shell.cookie-open .footer,
+body.cookie-open .footer {
+  padding-bottom: 0 !important;
+}
 .public-shell .h1 { font-size: clamp(2.45rem, 4.5vw, 4.9rem); line-height: 1.02; letter-spacing: -.045em; }
 .public-shell .h2 { font-size: clamp(2rem, 3.2vw, 3.65rem); line-height: 1.06; letter-spacing: -.038em; }
 .public-shell .lead { max-width: 690px; line-height: 1.65; }
@@ -86,63 +93,97 @@ html, body {
 .login-visual .brand-logo { height: 42px; max-width: 170px; filter: drop-shadow(0 1px 6px rgba(0,0,0,.25)); }
 .login-form-wrap .brand-logo { height: 40px; }
 
-/* Consentimiento: barra fija inferior, no tapa el hero ni el buscador */
-.cookie-banner {
+/* Consentimiento: montado en #cookie-root (fuera de #app), barra inferior visible */
+#cookie-root {
   position: fixed !important;
-  left: 50% !important;
-  right: auto !important;
-  bottom: 18px !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
   top: auto !important;
-  width: min(920px, calc(100% - 28px)) !important;
+  z-index: 2147483000 !important;
+  pointer-events: none;
+}
+#cookie-root:not([hidden]) { pointer-events: auto; }
+#cookie-root[hidden] { display: none !important; }
+.cookie-banner {
+  position: relative !important;
+  inset: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  top: auto !important;
+  width: 100% !important;
   max-width: none !important;
+  margin: 0 !important;
   padding: 0 !important;
-  border-radius: 14px !important;
-  background: rgba(34, 12, 18, .97) !important;
-  color: #fff;
-  border: 1px solid rgba(255,255,255,.12) !important;
-  box-shadow: 0 22px 60px rgba(20, 6, 10, .38) !important;
-  z-index: 90 !important;
-  transform: translateX(-50%) !important;
-  backdrop-filter: blur(10px);
+  border-radius: 0 !important;
+  transform: none !important;
+  background: #1a0a0f !important;
+  color: #fff !important;
+  border: 0 !important;
+  border-top: 1px solid rgba(255,255,255,.14) !important;
+  box-shadow: 0 -12px 40px rgba(0, 0, 0, .35) !important;
+  z-index: 1 !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 .cookie-inner {
+  width: min(1120px, calc(100% - 32px));
+  margin: 0 auto;
   min-height: 0;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: 20px;
-  padding: 16px 18px;
+  gap: 16px 24px;
+  padding: 14px 0;
 }
 .cookie-copy {
   min-width: 0;
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: center;
-  gap: 14px;
-}
-.cookie-brand {
-  width: 104px;
-  height: auto;
-  filter: drop-shadow(0 1px 4px rgba(0,0,0,.25));
+  gap: 4px;
 }
 .cookie-copy strong {
   display: block;
-  white-space: nowrap;
+  white-space: normal;
   font-family: var(--font-display);
-  font-size: .92rem;
-  margin-bottom: 4px;
+  font-size: .95rem;
+  margin: 0;
+  color: #fff;
 }
-.cookie-copy p { margin: 0; color: rgba(255,255,255,.74); font-size: .8rem; line-height: 1.45; max-width: 52ch; }
-.cookie-actions { display: flex; align-items: center; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
-.cookie-actions .btn { min-height: 40px; white-space: nowrap; }
+.cookie-copy p {
+  margin: 0;
+  color: rgba(255,255,255,.78);
+  font-size: .82rem;
+  line-height: 1.45;
+  max-width: 62ch;
+}
+.cookie-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.cookie-actions .btn { min-height: 42px; white-space: nowrap; }
 .cookie-actions .btn-outline {
   color: #fff !important;
-  border-color: rgba(255,255,255,.35) !important;
+  border-color: rgba(255,255,255,.4) !important;
   background: transparent !important;
 }
-.cookie-actions .btn-outline:hover { background: rgba(255,255,255,.08) !important; }
-.cookie-actions .btn-primary { background: var(--v6-burgundy) !important; border-color: var(--v6-burgundy) !important; }
-.cookie-actions a { color: rgba(255,255,255,.82); font-size: .78rem; text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; }
+.cookie-actions .btn-outline:hover { background: rgba(255,255,255,.1) !important; }
+.cookie-actions .btn-primary {
+  background: var(--v6-burgundy) !important;
+  border-color: var(--v6-burgundy) !important;
+  color: #fff !important;
+}
+.cookie-actions a {
+  color: rgba(255,255,255,.88);
+  font-size: .8rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  white-space: nowrap;
+}
 .cookie-manage-panel {
   margin: 22px 0;
   padding: 20px;
@@ -436,14 +477,11 @@ html, body {
   body { font-size: 16px; }
   .public-shell .section { padding: 68px 0; }
   .public-shell .section-sm { padding: 50px 0; }
-  .public-shell.cookie-open { padding-bottom: 0; }
-  .public-shell.cookie-open .footer { padding-bottom: 220px; }
-  .cookie-banner { bottom: 10px !important; width: min(100% - 16px, 920px) !important; border-radius: 12px !important; }
-  .cookie-inner { min-height: 0; grid-template-columns: 1fr; gap: 12px; padding: 14px; }
-  .cookie-copy { grid-template-columns: 1fr; gap: 8px; }
-  .cookie-brand { width: 96px; }
-  .cookie-copy strong { white-space: normal; }
-  .cookie-actions { justify-content: stretch; flex-wrap: wrap; }
+  .public-shell.cookie-open,
+  .public-shell.cookie-open .footer,
+  body.cookie-open .footer { padding-bottom: 0 !important; }
+  .cookie-inner { grid-template-columns: 1fr; gap: 12px; padding: 14px 0 16px; width: min(100% - 24px, 1120px); }
+  .cookie-actions { justify-content: stretch; }
   .cookie-actions .btn { flex: 1 1 140px; }
   .cookie-actions a { width: 100%; text-align: center; }
   .whatsapp-float { width: 54px !important; height: 54px !important; right: 14px !important; bottom: 14px !important; }

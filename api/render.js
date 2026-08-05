@@ -70,7 +70,9 @@ ${verification}
 <body>
 <a class="skip-link" href="#main">Saltar al contenido</a>
 <div id="app" aria-live="polite">${renderSsrContent(route, properties)}</div>
-<div id="toast-region" class="toast-region" aria-live="assertive"></div><div id="modal-root"></div>
+<div id="toast-region" class="toast-region" aria-live="assertive"></div>
+<div id="modal-root"></div>
+<div id="cookie-root"></div>
 <script type="module" src="/assets/app.js"></script>
 </body></html>`;
 

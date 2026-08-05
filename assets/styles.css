@@ -327,10 +327,7 @@ input, select, textarea { color: var(--ink); }
 .footer-links a:hover { color: white; }
 .footer-bottom { border-top: 1px solid rgba(255,255,255,.1); padding: 18px 0; display: flex; justify-content: space-between; gap: 20px; font-size: .75rem; }
 
-.cookie-banner { position: fixed; z-index: 80; left: 18px; bottom: 18px; width: min(430px, calc(100% - 36px)); background: var(--ink); color: white; border-radius: 20px; padding: 22px; box-shadow: var(--shadow-lg); }
-.cookie-banner h3 { font-family: var(--font-serif); font-size: 1.6rem; font-weight: 400; margin: 0 0 8px; }
-.cookie-banner p { color: rgba(255,255,255,.66); font-size: .8rem; margin: 0 0 16px; }
-.cookie-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+/* Cookie banner: estilos finales en v6.css */
 
 .modal-backdrop { position: fixed; inset: 0; z-index: 100; background: rgba(7,15,14,.82); backdrop-filter: blur(8px); display: grid; place-items: center; padding: 24px; }
 .modal { width: min(1100px, 100%); max-height: 92vh; overflow: auto; border-radius: var(--radius); background: var(--white); position: relative; }

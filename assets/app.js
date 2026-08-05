@@ -5,6 +5,12 @@ import { SEO_PAGES, GUIDES, getSeoPage, guideEntries, SITE_ORIGIN, SEO_UPDATED_A
 const app = document.querySelector('#app');
 const modalRoot = document.querySelector('#modal-root');
 const toastRegion = document.querySelector('#toast-region');
+const cookieRoot = document.querySelector('#cookie-root') || (() => {
+  const node = document.createElement('div');
+  node.id = 'cookie-root';
+  document.body.appendChild(node);
+  return node;
+})();
 
 const state = {
   properties: [],
@@ -194,26 +200,27 @@ function publicFooter() {
 }
 
 
+function hasCookieConsent() {
+  try { return Boolean(localStorage.getItem('noguera-cookie-consent')); }
+  catch (_) { return false; }
+}
+
 function publicLayout(content) {
   const shellClass = getPath() === '/' ? 'home-shell' : 'inner-shell';
-  const cookieOpen = !localStorage.getItem('noguera-cookie-consent');
+  const cookieOpen = !hasCookieConsent();
   const detailPath = /^\/inmuebles\/[^/]+$/.test(getPath());
   const seoPath = Boolean(getSeoPage(getPath()));
   const whatsapp = (detailPath || cookieOpen || seoPath) ? '' : `<a class="whatsapp-float" href="https://wa.me/${BUSINESS.whatsapp}?text=${encodeURIComponent('Hola, quisiera información sobre un inmueble de Inmobiliaria Noguera.')}" target="_blank" rel="noopener" aria-label="Contactar por WhatsApp"><span>${icons.phone}</span><strong>WhatsApp</strong></a>`;
-  return `<div class="public-shell ${shellClass} ${cookieOpen ? 'cookie-open' : ''}">${publicHeader()}<main id="main">${content}</main>${publicFooter()}${cookieBanner()}${whatsapp}</div>`;
+  return `<div class="public-shell ${shellClass}${cookieOpen ? ' cookie-open' : ''}">${publicHeader()}<main id="main">${content}</main>${publicFooter()}${whatsapp}</div>`;
 }
 
 
-function cookieBanner() {
-  if (localStorage.getItem('noguera-cookie-consent')) return '';
-  return `<aside class="cookie-banner" role="dialog" aria-modal="false" aria-label="Preferencias de cookies" aria-live="polite">
-    <div class="container cookie-inner">
+function cookieBannerHtml() {
+  return `<aside class="cookie-banner" role="dialog" aria-modal="true" aria-labelledby="cookie-title" aria-live="polite">
+    <div class="cookie-inner">
       <div class="cookie-copy">
-        <img class="cookie-brand" src="/public/images/brand/logo-noguera-cabecera-transparent.png" width="120" height="39" alt="" decoding="async">
-        <div>
-          <strong>Cookies y privacidad</strong>
-          <p>Usamos cookies técnicas para el funcionamiento del sitio. Las analíticas (Google Analytics) solo se activan si las aceptas. Puedes cambiar tu elección cuando quieras.</p>
-        </div>
+        <strong id="cookie-title">Cookies y privacidad</strong>
+        <p>Usamos cookies técnicas para el funcionamiento del sitio. Las analíticas solo se activan si las aceptas.</p>
       </div>
       <div class="cookie-actions">
         <button class="btn btn-primary btn-sm" type="button" data-action="cookies-accept">Aceptar todas</button>
@@ -222,6 +229,20 @@ function cookieBanner() {
       </div>
     </div>
   </aside>`;
+}
+
+function mountCookieBanner() {
+  if (!cookieRoot) return;
+  const open = !hasCookieConsent();
+  document.body.classList.toggle('cookie-open', open);
+  document.documentElement.classList.toggle('cookie-open', open);
+  if (!open) {
+    cookieRoot.innerHTML = '';
+    cookieRoot.hidden = true;
+    return;
+  }
+  cookieRoot.hidden = false;
+  cookieRoot.innerHTML = cookieBannerHtml();
 }
 
 
@@ -741,7 +762,8 @@ async function renderRoute({ scroll = true } = {}) {
   updateCounts();
   setupHeaderScroll();
   injectRouteSchema();
-  document.documentElement.dataset.cookieConsent = localStorage.getItem('noguera-cookie-consent') || '';
+  document.documentElement.dataset.cookieConsent = hasCookieConsent() ? (localStorage.getItem('noguera-cookie-consent') || '') : '';
+  mountCookieBanner();
   loadAnalytics();
 }
 
@@ -988,24 +1010,32 @@ async function handleForm(form) {
   }
 }
 
-app.addEventListener('click', (event) => {
+function onUiClick(event) {
   const contactLink = event.target.closest('a[href^="tel:"],a[href*="wa.me"]');
-  if (contactLink) trackEvent(contactLink.href.startsWith('tel:') ? 'click_to_call' : 'click_whatsapp',{link_url:contactLink.href,page_path:getPath()});
+  if (contactLink) trackEvent(contactLink.href.startsWith('tel:') ? 'click_to_call' : 'click_whatsapp', { link_url: contactLink.href, page_path: getPath() });
   const link = event.target.closest('a[data-link]');
-  if (link && !event.metaKey && !event.ctrlKey && !event.shiftKey && event.button===0) {
-    event.preventDefault(); navigate(link.getAttribute('href')); return;
+  if (link && !event.metaKey && !event.ctrlKey && !event.shiftKey && event.button === 0) {
+    event.preventDefault();
+    navigate(link.getAttribute('href'));
+    return;
   }
   const action = event.target.closest('[data-action]');
   if (action) {
-    if (action.dataset.action==='close-modal' && event.target.closest('[data-modal-content]')) return;
-    event.preventDefault(); handleAction(action,event);
+    if (action.dataset.action === 'close-modal' && event.target.closest('[data-modal-content]')) return;
+    event.preventDefault();
+    handleAction(action, event);
+    return;
   }
   const tab = event.target.closest('[data-search-tab]');
   if (tab) {
-    document.querySelectorAll('[data-search-tab]').forEach(t=>t.classList.remove('active'));
-    tab.classList.add('active'); const input=document.querySelector('[data-form="hero-search"] [name="operation"]'); if(input) input.value=tab.dataset.searchTab;
+    document.querySelectorAll('[data-search-tab]').forEach((t) => t.classList.remove('active'));
+    tab.classList.add('active');
+    const input = document.querySelector('[data-form="hero-search"] [name="operation"]');
+    if (input) input.value = tab.dataset.searchTab;
   }
-});
+}
+app.addEventListener('click', onUiClick);
+cookieRoot.addEventListener('click', onUiClick);
 
 app.addEventListener('submit', (event) => { const form=event.target.closest('form[data-form]'); if(!form) return; event.preventDefault(); handleForm(form); });
 app.addEventListener('change', (event) => {
