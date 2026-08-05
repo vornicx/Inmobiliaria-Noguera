@@ -874,3 +874,97 @@ body.cookie-open .footer {
 .public-shell .btn:hover svg {
   transform: none !important;
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   Sistema de cabeceras unificado
+   La home recibió el tratamiento editorial, pero el resto del sitio se
+   quedó con cinco cabeceras distintas (page-hero, catalog-hero,
+   detail-hero, seo-page-hero, vacational-hero) con escalas de h1 que
+   iban de 4,8rem a 6,4rem. Esto las alinea en una sola escala y un
+   único lenguaje de eyebrow, manteniendo burdeos + oro.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* —— Una sola escala de titular para cabeceras interiores ——
+   La home queda un escalón por encima (5,4rem) para mantener jerarquía. */
+.public-shell .page-hero .h1,
+.public-shell .catalog-hero h1,
+.public-shell .catalog-title-row h1,
+.public-shell .detail-title .h1,
+.public-shell .seo-page-hero .h1 {
+  font-size: clamp(2.5rem, 5vw, 4.4rem) !important;
+  line-height: 1.03 !important;
+  letter-spacing: -.04em !important;
+  font-weight: 700 !important;
+  max-width: 20ch;
+}
+
+/* —— Eyebrow con filete dorado, igual que el kicker de la home —— */
+.public-shell .page-hero .eyebrow,
+.public-shell .catalog-hero .eyebrow,
+.public-shell .seo-page-hero .eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-size: .68rem !important;
+  font-weight: 600 !important;
+  letter-spacing: .22em !important;
+  text-transform: uppercase;
+}
+.public-shell .page-hero .eyebrow::before,
+.public-shell .catalog-hero .eyebrow::before,
+.public-shell .seo-page-hero .eyebrow::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 28px;
+  height: 1px;
+  background: var(--brand-gold);
+}
+/* Sobre crema el oro puro no contrasta: se usa la variante legible. */
+.public-shell .seo-page-hero .eyebrow { color: var(--brand-burgundy) !important; }
+.public-shell .seo-page-hero .eyebrow::before { background: var(--brand-gold-text); }
+
+/* —— Cabeceras oscuras: profundidad en vez de plano —— */
+.public-shell .page-hero,
+.public-shell .catalog-hero {
+  position: relative;
+  background:
+    radial-gradient(125% 105% at 10% 0%, rgba(153, 31, 54, .50) 0%, transparent 60%),
+    linear-gradient(178deg, var(--brand-burgundy-deep) 0%, var(--brand-burgundy-dark) 100%) !important;
+  border-bottom: 1px solid rgba(254, 204, 2, .20);
+}
+.public-shell .page-hero { padding: clamp(104px, 12vw, 132px) 0 clamp(52px, 6vw, 72px) !important; }
+.public-shell .catalog-hero { padding: clamp(104px, 12vw, 128px) 0 34px !important; }
+.public-shell .page-hero .lead,
+.public-shell .catalog-title-row p { color: rgba(255, 255, 255, .74) !important; }
+
+/* —— Cabecera de ficha: crema, mismo aire que las páginas SEO —— */
+.public-shell .detail-hero {
+  padding: clamp(104px, 12vw, 126px) 0 40px !important;
+  background: var(--brand-cream);
+  border-bottom: 1px solid var(--brand-line);
+}
+
+/* —— Migas de pan coherentes en todas las cabeceras —— */
+.public-shell .page-hero .breadcrumbs,
+.public-shell .catalog-hero .breadcrumbs { color: rgba(255, 255, 255, .55); }
+.public-shell .detail-hero .breadcrumbs { color: var(--brand-muted); }
+.public-shell .breadcrumbs {
+  font-size: .72rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+/* —— Contador de la cabecera: estaba en terracota (--accent #c77d55),
+      que no pertenece a la paleta Noguera —— */
+.count-badge { background: var(--brand-gold) !important; color: var(--brand-burgundy-dark) !important; }
+
+@media (max-width: 760px) {
+  .public-shell .page-hero { padding: 92px 0 44px !important; }
+  .public-shell .catalog-hero,
+  .public-shell .detail-hero { padding-top: 92px !important; }
+  .public-shell .page-hero .h1,
+  .public-shell .catalog-hero h1,
+  .public-shell .catalog-title-row h1,
+  .public-shell .detail-title .h1,
+  .public-shell .seo-page-hero .h1 { font-size: clamp(2.15rem, 8.6vw, 2.8rem) !important; max-width: none; }
+}
