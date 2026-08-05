@@ -607,8 +607,7 @@ a, button { -webkit-tap-highlight-color: transparent; }
   .footer-grid { grid-template-columns: 1fr 1fr; gap: 40px 20px; }
   .footer-brand-col { grid-column: 1 / span 2; }
   .footer-bottom { align-items: flex-start; flex-direction: column; justify-content: center; gap: 7px; padding: 18px 0; }
-  .cookie-banner { grid-template-columns: 1fr; gap: 11px; bottom: 10px; padding: 14px; }
-  .cookie-actions { flex-wrap: wrap; }
+
   .public-shell .catalog-hero { padding-top: 88px; }
   .public-shell .catalog-hero-grid { min-height: 265px; grid-template-columns: 1fr; gap: 15px; padding-bottom: 25px; }
   .public-shell .catalog-hero-stat { display: none; }
