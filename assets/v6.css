@@ -174,7 +174,7 @@ html, body { overflow-x: clip; }
 .v5-hero .hero-title { max-width: 640px; font-size: clamp(3.15rem, 5.5vw, 5.9rem); line-height: .97; letter-spacing: -.052em; }
 .v5-hero .hero-sub { max-width: 570px; }
 
-/* Buscador debajo del hero, en flujo normal */
+/* Buscador COMPLETAMENTE debajo del hero: sin absolute ni solape con la foto */
 .public-shell .home-search-wrap,
 .home-search-wrap {
   position: relative !important;
@@ -183,10 +183,12 @@ html, body { overflow-x: clip; }
   top: auto !important;
   bottom: auto !important;
   transform: none !important;
-  z-index: 6;
-  width: min(1120px, calc(100% - 40px));
-  margin: -42px auto 0 !important;
-  padding: 0 !important;
+  z-index: 2;
+  width: 100%;
+  max-width: none;
+  margin: 0 !important;
+  padding: 28px 0 8px !important;
+  background: var(--v6-paper);
 }
 .public-shell .home-search-wrap .search-shell,
 .home-search-wrap .search-shell {
@@ -194,8 +196,10 @@ html, body { overflow-x: clip; }
   overflow: hidden !important;
   border-radius: 12px !important;
   background: #fff !important;
-  box-shadow: 0 22px 60px rgba(20, 7, 10, .18);
-  width: 100%;
+  box-shadow: 0 14px 40px rgba(20, 7, 10, .10);
+  border: 1px solid var(--v6-line);
+  width: min(1120px, calc(100% - 40px));
+  margin: 0 auto;
 }
 .public-shell .home-search-wrap .search-tabs,
 .home-search-wrap .search-tabs {
@@ -296,7 +300,7 @@ html, body { overflow-x: clip; }
 }
 .public-shell .home-search-wrap .search-submit:hover,
 .home-search-wrap .search-submit:hover { background: var(--v6-burgundy-deep); }
-.public-shell .trust-strip { padding-top: 64px; }
+.public-shell .trust-strip { padding-top: 18px; }
 
 /* Propiedades: cuadrícula estable, sin spans ni superposiciones */
 .public-shell .property-grid,
@@ -511,8 +515,13 @@ html, body { overflow-x: clip; }
   .v5-hero .hero-sub { font-size: 1rem; }
   .public-shell .home-search-wrap,
   .home-search-wrap {
+    width: 100%;
+    margin: 0 !important;
+    padding: 18px 0 4px !important;
+  }
+  .public-shell .home-search-wrap .search-shell,
+  .home-search-wrap .search-shell {
     width: min(100% - 28px, 1120px);
-    margin-top: -28px !important;
   }
   .public-shell .home-search-wrap .search-bar,
   .home-search-wrap .search-bar { grid-template-columns: 1fr !important; }
@@ -533,7 +542,7 @@ html, body { overflow-x: clip; }
     height: 54px;
     grid-column: auto;
   }
-  .public-shell .trust-strip { padding-top: 48px; }
+  .public-shell .trust-strip { padding-top: 12px; }
   .trust-strip-grid { grid-template-columns: 1fr 1fr; }
   .public-shell .property-grid, .public-shell .property-grid.compact, .public-shell .home-featured-grid, .catalog-main .property-grid.compact { grid-template-columns: 1fr !important; gap: 22px !important; }
   .home-featured-grid .property-card:nth-child(n+4) { display: none; }
