@@ -69,7 +69,25 @@ const zonaDe = (titulo) => {
   return m[1].trim().replace(/\s+/g, ' ').replace(/^el\s+/i, 'El ').slice(0, 60) || 'Écija';
 };
 
-const slugDe = (url) => (url.match(/\/property\/([^/]+)\//) || [])[1] || '';
+/* Los slugs de las fichas nuevas llevan el emoji percent-encoded (%f0%9f%94%91),
+   que sin descodificar acaba en la URL pública como "f0-9f-94-91...". */
+const slugDe = (url) => {
+  const bruto = (url.match(/\/property\/([^/]+)\//) || [])[1] || '';
+  let s = bruto;
+  for (let i = 0; i < 2; i++) {
+    try { const d = decodeURIComponent(s); if (d === s) break; s = d; } catch (_) { break; }
+  }
+  s = s.replace(/(?:^|-)(?:[0-9a-f]{2}-){2,}[0-9a-f]{2}-?/gi, '-');
+  return s
+    .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]/gu, '-')
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .replace(/-{2,}/g, '-')
+    .slice(0, 80)
+    .replace(/-+$/, '');
+};
 
 const caracteristicas = (v) => (Array.isArray(v) ? v : String(v || "").split(/[\n,]| {2,}/))
   .map((x) => String(x))
@@ -128,7 +146,15 @@ for (const x of cruda) {
   });
 }
 
-// red de seguridad: referencia única (la BD tiene unique)
+// red de seguridad: slug y referencia únicos (la BD tiene unique en ambos)
+const slugsVistos = new Map();
+salida.forEach((p) => {
+  if (!p.slug) p.slug = `inmueble-${p.reference}`.toLowerCase();
+  const n = (slugsVistos.get(p.slug) || 0) + 1;
+  slugsVistos.set(p.slug, n);
+  if (n > 1) p.slug = `${p.slug}-${n}`;
+});
+
 const vistas = new Map();
 salida.forEach((p) => {
   const n = (vistas.get(p.reference) || 0) + 1;
