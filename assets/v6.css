@@ -968,3 +968,66 @@ body.cookie-open .footer {
   .public-shell .detail-title .h1,
   .public-shell .seo-page-hero .h1 { font-size: clamp(2.15rem, 8.6vw, 2.8rem) !important; max-width: none; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   Detalles de legibilidad
+   Medido sobre el píxel renderizado en 11 rutas. Todo lo de aquí
+   estaba por debajo del mínimo WCAG AA (4,5:1 en texto normal).
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* —— Panel CTA: era terracota var(--accent) #c77d55, resto del diseño
+      antiguo verde+terracota de styles.css. Chocaba con el pie burdeos
+      justo debajo, y encima el eyebrow quedaba a 2,49:1. —— */
+.public-shell .cta-panel {
+  background: linear-gradient(135deg, var(--brand-burgundy) 0%, var(--brand-burgundy-deep) 100%) !important;
+}
+.public-shell .cta-panel .eyebrow { color: var(--brand-gold-soft) !important; }
+.public-shell .cta-panel .eyebrow::before { background: var(--brand-gold); }
+.public-shell .cta-panel p { color: rgba(255, 255, 255, .86) !important; }
+
+/* —— Eyebrow burdeos sobre fondos oscuros: 2,03:1 en /nosotros y
+      2,22:1 en las fichas laterales de zonas y venta. —— */
+.public-shell .section-dark .eyebrow,
+.public-shell .seo-side-card .eyebrow,
+.public-shell [class*="-dark"] .eyebrow { color: var(--brand-gold-soft) !important; }
+
+/* —— Migas de pan: .55 de alfa se quedaba en 4,27:1 —— */
+.public-shell .page-hero .breadcrumbs,
+.public-shell .catalog-hero .breadcrumbs { color: rgba(255, 255, 255, .74); }
+
+/* —— Etiqueta del catálogo: estaba a .56rem, es decir 9px —— */
+.public-shell .catalog-label {
+  font-size: .7rem !important;
+  color: var(--brand-muted) !important;
+}
+.public-shell .catalog-count { color: var(--brand-muted) !important; }
+
+/* —— Ficha de agente: el gris #8c7e75 se quedaba en 3,92:1, y además
+      pisaba por especificidad al dorado de .agent-number —— */
+.public-shell .agent-card > div:last-child > span { color: var(--brand-muted); }
+.public-shell .agent-card .agent-number { color: var(--brand-gold-text); }
+
+/* —— WhatsApp: blanco sobre #1f8c5d daba 4,23:1 —— */
+.public-shell .btn-whatsapp { background: #14714a; border-color: #14714a; }
+.public-shell .btn-whatsapp:hover { background: #105c3b; border-color: #105c3b; }
+
+/* —— Tamaños mínimos legibles ——
+   El pie bajaba a 9,3px en los títulos de columna y a 9,8px en el aviso
+   legal y el botón de cookies. Contrastan bien, pero a ese cuerpo no se
+   leen. Se suben a 11px, que sigue siendo discreto en versales. */
+.public-shell .footer h4 { font-size: .7rem !important; }
+.public-shell .footer-kicker { font-size: .7rem !important; }
+.public-shell .footer-bottom { font-size: .7rem !important; }
+.public-shell .badge { font-size: .69rem !important; }
+
+/* —— Casilla de consentimiento: 13px es difícil de acertar con el dedo.
+      El label la envuelve, así que el área real es mayor, pero la marca
+      visual necesita cuerpo. —— */
+.public-shell .check input[type="checkbox"] { width: 18px; height: 18px; flex: 0 0 auto; }
+
+@media (max-width: 760px) {
+  /* Controles primarios a 44px, el mínimo recomendado para el dedo. */
+  .public-shell .operation-links a,
+  .public-shell .icon-btn { min-height: 44px; }
+  .public-shell .icon-btn { min-width: 44px; }
+}
