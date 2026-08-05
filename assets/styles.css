@@ -105,9 +105,11 @@ input, select, textarea { color: var(--ink); }
 .btn {
   min-height: 48px; border: 0; border-radius: 999px; padding: 0 22px;
   display: inline-flex; align-items: center; justify-content: center; gap: 10px;
-  font-weight: 700; font-size: .9rem; transition: .2s ease; white-space: nowrap;
+  font-weight: 700; font-size: .9rem; transition: background .15s ease, border-color .15s ease, color .15s ease, box-shadow .15s ease;
+  white-space: nowrap;
+  transform: none;
 }
-.btn:hover { transform: translateY(-2px); }
+.btn:hover, .btn:focus-visible { transform: none; }
 .btn-primary { background: var(--ink); color: white; box-shadow: 0 12px 28px rgba(20,34,33,.18); }
 .btn-primary:hover { background: #233432; }
 .btn-accent { background: var(--accent); color: white; box-shadow: 0 12px 28px rgba(199,125,85,.24); }
