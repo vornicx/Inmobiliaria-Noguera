@@ -1,0 +1,9 @@
+{
+  "name": "Inmobiliaria Noguera",
+  "short_name": "Noguera",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f1ea",
+  "theme_color": "#3f1019",
+  "icons": [{"src":"/favicon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+}
