@@ -95,9 +95,9 @@ input, select, textarea { color: var(--ink); }
 .header-actions { display: flex; align-items: center; gap: 10px; }
 .icon-btn {
   width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--line);
-  background: transparent; display: inline-grid; place-items: center; position: relative; transition: .2s ease;
+  background: transparent; display: inline-grid; place-items: center; position: relative; transition: background .15s ease, border-color .15s ease, color .15s ease;
 }
-.icon-btn:hover { background: var(--white); border-color: var(--line-strong); transform: translateY(-1px); }
+.icon-btn:hover { background: var(--white); border-color: var(--line-strong); transform: none; }
 .count-badge { position: absolute; top: -3px; right: -3px; min-width: 18px; height: 18px; border-radius: 9px; background: var(--accent); color: white; font-size: .65rem; font-weight: 700; display: grid; place-items: center; padding: 0 4px; }
 .mobile-toggle { display: none; }
 .mobile-menu { display: none; }

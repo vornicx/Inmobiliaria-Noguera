@@ -667,3 +667,37 @@ body.cookie-open .footer {
 .public-shell .btn-primary:hover { background: var(--v6-burgundy-deep); border-color: var(--v6-burgundy-deep); }
 .login-page .btn-primary,
 .login-page .btn-wide { background: var(--v6-burgundy) !important; border-color: var(--v6-burgundy) !important; color: #fff !important; }
+
+/* Botones e iconos: sin desplazamiento al pasar el cursor */
+.btn,
+.btn:hover,
+.btn:focus-visible,
+.btn:active,
+.icon-btn,
+.icon-btn:hover,
+.icon-btn:focus-visible,
+.icon-btn:active,
+.card-action,
+.card-action:hover,
+.action-btn,
+.action-btn:hover,
+.whatsapp-float,
+.whatsapp-float:hover,
+.btn-header,
+.btn-header:hover,
+.modal-close,
+.modal-close:hover,
+.modal-nav,
+.modal-nav:hover,
+.public-shell .btn,
+.public-shell .btn:hover,
+.public-shell .btn:focus-visible,
+.public-shell .icon-btn,
+.public-shell .icon-btn:hover {
+  transform: none !important;
+}
+.btn svg,
+.btn:hover svg,
+.public-shell .btn:hover svg {
+  transform: none !important;
+}

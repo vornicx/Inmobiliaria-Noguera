@@ -37,7 +37,7 @@
 .public-shell .lead { color: #65706d; line-height: 1.75; font-size: 1.06rem; }
 .public-shell .btn { border-radius: 0; min-height: 54px; padding-inline: 25px; letter-spacing: .015em; font-size: .82rem; }
 .public-shell .btn svg { transition: transform .25s ease; }
-.public-shell .btn:hover svg { transform: translateX(4px); }
+.public-shell .btn:hover svg { transform: none; }
 .public-shell .btn-primary { background: var(--premium-forest); box-shadow: none; color: #fff; }
 .public-shell .btn-primary:hover { background: var(--premium-night); }
 .public-shell .btn-outline { border-color: var(--premium-line); }
