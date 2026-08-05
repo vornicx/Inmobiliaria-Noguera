@@ -1031,3 +1031,22 @@ body.cookie-open .footer {
   .public-shell .icon-btn { min-height: 44px; }
   .public-shell .icon-btn { min-width: 44px; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   Correcciones de comportamiento
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* —— WhatsApp ya no se esconde mientras se decide sobre cookies: se
+      coloca encima de la barra, cuyo alto real publica app.js. —— */
+.whatsapp-float {
+  bottom: calc(22px + var(--cookie-bar-h, 0px)) !important;
+  transition: bottom .2s ease;
+  z-index: 140000;
+}
+
+/* —— Contador de cabecera a cero: se oculta en vez de mostrar un “0”. —— */
+.count-badge.is-zero { display: none !important; }
+
+/* —— Acceso al comparador, que hasta ahora no existía en ninguna parte. —— */
+.header-compare { position: relative; }
+.mobile-menu-tools a svg { flex: 0 0 auto; }

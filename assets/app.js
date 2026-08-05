@@ -180,13 +180,14 @@ function publicHeader() {
     <div class="header-actions">
       <a class="header-phone" href="tel:${BUSINESS.phoneHref}" aria-label="Llamar al ${attr(BUSINESS.phone)}">${icons.phone}<span>${esc(BUSINESS.phone)}</span></a>
       <a class="icon-btn header-favorite" href="/favoritos" data-link aria-label="Favoritos">${icons.heart}<span class="count-badge" data-fav-count>${state.favorites.length}</span></a>
+      <a class="icon-btn header-compare${state.compare.length ? '' : ' is-empty'}" href="/comparar" data-link aria-label="Comparador">${icons.compare}<span class="count-badge" data-compare-count>${state.compare.length}</span></a>
       <a class="btn btn-header" href="/valoracion-vivienda-ecija" data-link>Valorar inmueble</a>
       <button class="icon-btn mobile-toggle" data-action="toggle-menu" aria-label="${state.mobileMenu ? 'Cerrar menú' : 'Abrir menú'}" aria-expanded="${state.mobileMenu}">${state.mobileMenu ? icons.close : icons.menu}</button>
     </div>
   </div></header>
   <nav class="mobile-menu ${state.mobileMenu ? 'open' : ''}" aria-label="Navegación móvil">
     ${navLink('/inmuebles', 'Inmuebles')}${navLink('/vender-vivienda-ecija', 'Vender mi inmueble')}${navLink('/financiacion', 'Financiación')}${navLink('/alquiler-vacacional', 'Alquiler vacacional')}${navLink('/agentes', 'Equipo')}${navLink('/nosotros', 'La agencia')}${navLink('/guias', 'Guías')}${navLink('/contacto', 'Contacto')}
-    <div class="mobile-menu-tools"><a href="/favoritos" data-link>${icons.heart} Favoritos (${state.favorites.length})</a><a href="/busquedas-guardadas" data-link>${icons.search} Búsquedas guardadas</a><a href="/admin" data-link>${icons.user} Zona privada</a><a href="tel:${BUSINESS.phoneHref}">${icons.phone} ${esc(BUSINESS.phone)}</a></div>
+    <div class="mobile-menu-tools"><a href="/favoritos" data-link>${icons.heart} Favoritos (${state.favorites.length})</a><a href="/comparar" data-link>${icons.compare} Comparador (${state.compare.length})</a><a href="/busquedas-guardadas" data-link>${icons.search} Búsquedas guardadas</a><a href="/admin" data-link>${icons.user} Zona privada</a><a href="tel:${BUSINESS.phoneHref}">${icons.phone} ${esc(BUSINESS.phone)}</a></div>
   </nav>`;
 }
 
@@ -215,7 +216,10 @@ function publicLayout(content) {
   const cookieOpen = !hasCookieConsent();
   const detailPath = /^\/inmuebles\/[^/]+$/.test(getPath());
   const seoPath = Boolean(getSeoPage(getPath()));
-  const whatsapp = (detailPath || cookieOpen || seoPath) ? '' : `<a class="whatsapp-float" href="https://wa.me/${BUSINESS.whatsapp}?text=${encodeURIComponent('Hola, quisiera información sobre un inmueble de Inmobiliaria Noguera.')}" target="_blank" rel="noopener" aria-label="Contactar por WhatsApp"><span>${icons.phone}</span><strong>WhatsApp</strong></a>`;
+  /* El botón no se oculta mientras el aviso de cookies está abierto: parecía
+     que sólo aparecía "después de aceptar". Se sube por encima de la barra
+     con --cookie-bar-h, que fija mountCookieBanner(). */
+  const whatsapp = (detailPath || seoPath) ? '' : `<a class="whatsapp-float" href="https://wa.me/${BUSINESS.whatsapp}?text=${encodeURIComponent('Hola, quisiera información sobre un inmueble de Inmobiliaria Noguera.')}" target="_blank" rel="noopener" aria-label="Contactar por WhatsApp"><span>${icons.phone}</span><strong>WhatsApp</strong></a>`;
   return `<div class="public-shell ${shellClass}${cookieOpen ? ' cookie-open' : ''}">${publicHeader()}<main id="main">${content}</main>${publicFooter()}${whatsapp}</div>`;
 }
 
@@ -225,12 +229,12 @@ function cookieBannerHtml() {
     <div class="cookie-inner">
       <div class="cookie-copy">
         <strong id="cookie-title">Cookies y privacidad</strong>
-        <p>Usamos cookies técnicas para el funcionamiento del sitio. Las analíticas solo se activan si las aceptas.</p>
+        <p>Usamos cookies técnicas para que el sitio funcione. Las analíticas solo se activan si las aceptas; si las rechazas, la web funciona igual.</p>
       </div>
       <div class="cookie-actions">
-        <button class="btn btn-primary btn-sm" type="button" data-action="cookies-accept">Aceptar todas</button>
-        <button class="btn btn-outline btn-sm" type="button" data-action="cookies-essential">Solo necesarias</button>
-        <a href="/legal/cookies" data-link>Política de cookies</a>
+        <button class="btn btn-primary btn-sm" type="button" data-action="cookies-accept">Aceptar</button>
+        <button class="btn btn-outline btn-sm" type="button" data-action="cookies-essential">Rechazar</button>
+        <a href="/legal/cookies" data-link>Personalizar</a>
       </div>
     </div>
   </aside>`;
@@ -244,10 +248,23 @@ function mountCookieBanner() {
   if (!open) {
     cookieRoot.innerHTML = '';
     cookieRoot.hidden = true;
+    document.documentElement.style.setProperty('--cookie-bar-h', '0px');
     return;
   }
   cookieRoot.hidden = false;
   cookieRoot.innerHTML = cookieBannerHtml();
+  /* Alto real de la barra, para que el botón de WhatsApp se coloque encima
+     en lugar de esconderse mientras hay que decidir. */
+  const setBarHeight = () => {
+    const h = cookieRoot.querySelector('.cookie-banner')?.offsetHeight || 0;
+    document.documentElement.style.setProperty('--cookie-bar-h', `${h}px`);
+  };
+  setBarHeight();
+  requestAnimationFrame(setBarHeight);
+  if (!mountCookieBanner._resize) {
+    mountCookieBanner._resize = true;
+    window.addEventListener('resize', () => { if (!cookieRoot.hidden) setBarHeight(); });
+  }
 }
 
 
@@ -480,7 +497,7 @@ function compareView() {
     ['Superficie',(p)=>p.area?`${p.area} m²`:p.plot_area?`${p.plot_area} m² parcela`:'—'], ['Planta',(p)=>p.floor||'—'],
     ['Energía',(p)=>p.energy_rating||'En trámite'], ['Características',(p)=>(p.features||[]).slice(0,5).join(', ')||'—'],
   ];
-  return publicLayout(`${pageHero({eyebrow:'Comparador',title:'Ponlos frente a frente.',text:'Una vista rápida para comparar los datos que más pesan en tu decisión.'})}<section class="section-sm"><div class="container" style="overflow:auto"><table class="compare-table"><thead><tr><th>Inmueble</th>${items.map(p=>`<th><img class="compare-image" src="${attr(safeImage(p.images?.[0]))}" ${imageErrorAttr(p)} alt="${attr(p.title)}"><a href="/inmuebles/${attr(p.slug)}" data-link><strong>${esc(p.title)}</strong></a><br><button class="btn btn-ghost btn-sm" data-action="compare" data-id="${attr(p.id)}">Quitar</button></th>`).join('')}</tr></thead><tbody>${rows.map(([label,fn])=>`<tr><td>${label}</td>${items.map(p=>`<td>${fn(p)}</td>`).join('')}</tr>`).join('')}</tbody></table></div></section>`);
+  return publicLayout(`${pageHero({eyebrow:'Comparador',title:'Ponlos frente a frente.',text:'Una vista rápida para comparar los datos que más pesan en tu decisión.'})}<section class="section-sm"><div class="container" style="overflow:auto"><table class="compare-table"><thead><tr><th>Inmueble</th>${items.map(p=>`<th><img class="compare-image" src="${attr(safeImage(p.images?.[0]))}" ${imageErrorAttr(p)} alt="${attr(p.title)}"><a href="/inmuebles/${attr(p.slug)}" data-link><strong>${esc(p.title)}</strong></a><br><button class="btn btn-ghost btn-sm" data-action="compare" data-id="${attr(p.id)}" data-keep-label="1">Quitar</button></th>`).join('')}</tr></thead><tbody>${rows.map(([label,fn])=>`<tr><td>${label}</td>${items.map(p=>`<td>${fn(p)}</td>`).join('')}</tr>`).join('')}</tbody></table></div></section>`);
 }
 
 function savedSearchesView() {
@@ -800,8 +817,9 @@ function associateFieldLabels(root) {
 }
 
 function updateCounts() {
-  document.querySelectorAll('[data-fav-count]').forEach(el=>el.textContent=state.favorites.length);
-  document.querySelectorAll('[data-compare-count]').forEach(el=>el.textContent=state.compare.length);
+  /* Un contador a cero no aporta nada y ensucia la cabecera: se oculta. */
+  document.querySelectorAll('[data-fav-count]').forEach((el)=>{ el.textContent=state.favorites.length; el.classList.toggle('is-zero', !state.favorites.length); });
+  document.querySelectorAll('[data-compare-count]').forEach((el)=>{ el.textContent=state.compare.length; el.classList.toggle('is-zero', !state.compare.length); });
 }
 
 function setupHeaderScroll() {
@@ -918,18 +936,46 @@ function stepGallery(delta) {
   renderGalleryModal();
 }
 
+/* Marcar favorito o comparar sólo cambia el estado de unos botones y de los
+   contadores. Repintar todo #app hacía que la cabecera se destruyese y se
+   recrease en cada pulsación, que es el parpadeo que se veía. Se actualiza en
+   sitio, y sólo se repinta cuando la propia lista es el contenido de la página. */
+function syncListButtons() {
+  document.querySelectorAll('[data-action="favorite"][data-id]').forEach((btn) => {
+    const on = state.favorites.includes(btn.dataset.id);
+    btn.classList.toggle('active', on);
+    btn.setAttribute('aria-label', on ? 'Quitar de favoritos' : 'Añadir a favoritos');
+    btn.innerHTML = on ? icons.heartFill : icons.heart;
+  });
+  document.querySelectorAll('[data-action="compare"][data-id]').forEach((btn) => {
+    const on = state.compare.includes(btn.dataset.id);
+    btn.classList.toggle('active', on);
+    if (!btn.dataset.keepLabel) btn.setAttribute('aria-label', on ? 'Quitar del comparador' : 'Añadir al comparador');
+  });
+  document.querySelector('.header-compare')?.classList.toggle('is-empty', state.compare.length === 0);
+  updateCounts();
+}
+
+function refreshAfterListChange() {
+  if (['/favoritos', '/comparar'].includes(getPath())) renderRoute({ scroll: false });
+  else syncListButtons();
+}
+
 function toggleFavorite(id) {
   if (state.favorites.includes(id)) { state.favorites = state.favorites.filter(value=>value!==id); toast('Quitado de favoritos.'); }
   else { state.favorites.push(id); toast('Guardado en favoritos.', 'success'); }
   saveList('noguera-favorites', state.favorites);
-  renderRoute({scroll:false});
+  refreshAfterListChange();
 }
 function toggleCompare(id) {
-  if (state.compare.includes(id)) state.compare = state.compare.filter(value=>value!==id);
+  if (state.compare.includes(id)) { state.compare = state.compare.filter(value=>value!==id); toast('Quitado del comparador.'); }
   else if (state.compare.length >= 3) { toast('Puedes comparar un máximo de 3 inmuebles.', 'error'); return; }
-  else state.compare.push(id);
+  else {
+    state.compare.push(id);
+    toast(state.compare.length > 1 ? `Añadido al comparador (${state.compare.length}). Ábrelo desde la cabecera.` : 'Añadido al comparador. Elige otro inmueble para compararlos.', 'success');
+  }
   saveList('noguera-compare', state.compare);
-  renderRoute({scroll:false});
+  refreshAfterListChange();
 }
 
 async function handleAction(button, event) {
@@ -948,7 +994,15 @@ async function handleAction(button, event) {
   if (action === 'gallery-next') { stepGallery(1); return; }
   if (action === 'cookies-accept') { setCookieConsent('analytics'); return; }
   if (action === 'cookies-essential') { setCookieConsent('essential'); return; }
-  if (action === 'cookies-reset') { localStorage.removeItem('noguera-cookie-consent'); document.documentElement.dataset.cookieConsent = ''; renderRoute({ scroll: false }); toast('Puedes volver a elegir tus preferencias de cookies.'); return; }
+  if (action === 'cookies-reset') {
+    localStorage.removeItem('noguera-cookie-consent');
+    document.documentElement.dataset.cookieConsent = '';
+    mountCookieBanner();
+    /* El aviso vuelve abajo del todo: si no se lleva el foco, desde el pie
+       parece que "sólo sale un mensaje" y no se ve que hay que elegir. */
+    cookieRoot.querySelector('[data-action="cookies-accept"]')?.focus({ preventScroll: true });
+    return;
+  }
   if (action === 'open-filters') document.querySelector('#catalog-filters')?.classList.add('open');
   if (action === 'close-filters') document.querySelector('#catalog-filters')?.classList.remove('open');
   if (action === 'clear-filters') navigate('/inmuebles');
