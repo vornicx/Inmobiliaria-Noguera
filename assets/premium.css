@@ -285,7 +285,9 @@
 .public-shell .info-card { border-radius: 0; }
 
 /* Footer */
-.public-shell .footer { background: #08110f; color: rgba(255,255,255,.72); padding-top: 95px; }
+.public-shell .footer { background: #2c0d14; color: rgba(255,255,255,.72); padding-top: 95px; }
+.public-shell .footer-brand-col .brand-logo,
+.public-shell .footer-brand-link { background: none !important; box-shadow: none !important; filter: none !important; }
 .public-shell .footer-lead { display: flex; justify-content: space-between; align-items: end; gap: 30px; padding-bottom: 70px; border-bottom: 1px solid rgba(255,255,255,.15); }
 .public-shell .footer-kicker { color: var(--premium-brass-light); font-size: .6rem; text-transform: uppercase; letter-spacing: .18em; }
 .public-shell .footer-lead h2 { max-width: 850px; font-family: var(--font-serif); font-weight: 500; font-size: clamp(3rem, 5.5vw, 6rem); letter-spacing: -.045em; line-height: .9; color: white; margin: 18px 0 0; }

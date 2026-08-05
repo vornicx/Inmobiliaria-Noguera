@@ -18,9 +18,15 @@
   --v5-ochre-light: #ffe066;
 }
 
-html, body { overflow-x: clip; }
+html, body {
+  overflow-x: clip;
+  /* Mismo color que el footer: evita franja crema debajo del pie */
+  background: #2c0d14;
+}
 .public-shell { background: var(--v6-paper); }
-.public-shell.cookie-open { padding-bottom: 140px; }
+/* No empujar el shell con padding crema bajo el footer: el espacio lo da el propio pie */
+.public-shell.cookie-open { padding-bottom: 0; }
+.public-shell.cookie-open .footer { padding-bottom: 150px; }
 .public-shell .h1 { font-size: clamp(2.45rem, 4.5vw, 4.9rem); line-height: 1.02; letter-spacing: -.045em; }
 .public-shell .h2 { font-size: clamp(2rem, 3.2vw, 3.65rem); line-height: 1.06; letter-spacing: -.038em; }
 .public-shell .lead { max-width: 690px; line-height: 1.65; }
@@ -47,33 +53,34 @@ html, body { overflow-x: clip; }
   filter: drop-shadow(0 2px 10px rgba(0,0,0,.35)) drop-shadow(0 0 1px rgba(255,255,255,.55));
 }
 .site-header.header-overlay.scrolled .brand-logo { filter: none; }
-/* Pie: logo oficial sobre placa clara (diseñado para fondo blanco) */
-.footer-logo-link {
+/* Pie: logo oficial sin placa blanca, integrado en el fondo oscuro */
+.public-shell .footer,
+.footer {
+  background: #2c0d14 !important;
+  color: rgba(255, 255, 255, .72);
+}
+.footer-brand-link {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
   margin: 0 0 18px;
-  padding: 12px 16px;
-  border-radius: 12px;
-  background: #fff;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, .18);
+  padding: 0;
+  background: none !important;
+  border: 0;
+  box-shadow: none !important;
   line-height: 0;
-  transition: transform .18s ease, box-shadow .18s ease;
-}
-.footer-logo-link:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 12px 34px rgba(0, 0, 0, .22);
 }
 .footer-brand-col .brand-footer,
 .footer-brand-col .brand-logo {
   display: block;
   filter: none !important;
+  background: none !important;
 }
 .footer-brand-col .brand-logo {
-  height: 48px;
+  height: 56px;
   width: auto;
-  max-width: 200px;
+  max-width: min(220px, 70vw);
   object-fit: contain;
+  object-position: left center;
 }
 .admin-brand-row .brand-logo,
 .login-visual .brand-logo { height: 42px; max-width: 170px; filter: drop-shadow(0 1px 6px rgba(0,0,0,.25)); }
@@ -429,7 +436,8 @@ html, body { overflow-x: clip; }
   body { font-size: 16px; }
   .public-shell .section { padding: 68px 0; }
   .public-shell .section-sm { padding: 50px 0; }
-  .public-shell.cookie-open { padding-bottom: 210px; }
+  .public-shell.cookie-open { padding-bottom: 0; }
+  .public-shell.cookie-open .footer { padding-bottom: 220px; }
   .cookie-banner { bottom: 10px !important; width: min(100% - 16px, 920px) !important; border-radius: 12px !important; }
   .cookie-inner { min-height: 0; grid-template-columns: 1fr; gap: 12px; padding: 14px; }
   .cookie-copy { grid-template-columns: 1fr; gap: 8px; }
@@ -455,8 +463,7 @@ html, body { overflow-x: clip; }
   .home-quick-row { gap: 8px; }
   .home-quick-row > a { min-height: 38px; padding: 0 13px; font-size: .78rem; }
   .home-quick-row > a.home-quick-all { width: 100%; justify-content: center; margin-top: 4px; }
-  .footer-logo-link { padding: 10px 14px; }
-  .footer-brand-col .brand-logo { height: 42px; max-width: 180px; }
+  .footer-brand-col .brand-logo { height: 48px; max-width: 190px; }
   .trust-strip-grid { grid-template-columns: 1fr 1fr; }
   .public-shell .property-grid, .public-shell .property-grid.compact, .public-shell .home-featured-grid, .catalog-main .property-grid.compact { grid-template-columns: 1fr !important; gap: 22px !important; }
   .home-featured-grid .property-card:nth-child(n+4) { display: none; }

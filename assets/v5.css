@@ -362,6 +362,7 @@ a, button { -webkit-tap-highlight-color: transparent; }
 
 /* Footer */
 .footer { background: #2c0d14; color: #fff; }
+.footer-brand-col .brand-logo { filter: none; background: none; }
 .footer-cta { min-height: 270px; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 55px; border-bottom: 1px solid rgba(255,255,255,.15); }
 .footer-cta h2 { max-width: 840px; margin: 12px 0 0; font-family: var(--font-display); font-size: clamp(2.3rem, 4vw, 4.3rem); font-weight: 700; line-height: 1.02; letter-spacing: -.045em; }
 .footer-kicker { color: var(--v5-ochre-light); font-size: .7rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }

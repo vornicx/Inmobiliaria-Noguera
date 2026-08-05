@@ -141,11 +141,13 @@ function queryParams() { return new URLSearchParams(window.location.search); }
 function isAdminPath() { return getPath().startsWith('/admin'); }
 
 function logo({ light = false, compact = false, footer = false } = {}) {
-  const src = compact
-    ? '/public/images/brand/logo-noguera-admin-transparent.png'
-    : '/public/images/brand/logo-noguera-cabecera-transparent.png';
+  const src = footer
+    ? '/public/images/brand/logo-noguera-cabecera-transparent.png'
+    : compact
+      ? '/public/images/brand/logo-noguera-admin-transparent.png'
+      : '/public/images/brand/logo-noguera-cabecera-transparent.png';
   return `<span class="brand ${light ? 'brand-light' : ''} ${compact ? 'brand-compact' : ''} ${footer ? 'brand-footer' : ''}" aria-label="Inmobiliaria Noguera">
-    <img class="brand-logo" src="${src}" width="${compact ? 148 : footer ? 186 : 168}" height="${compact ? 55 : footer ? 60 : 54}" alt="Inmobiliaria Noguera" decoding="async">
+    <img class="brand-logo" src="${src}" width="${compact ? 148 : footer ? 200 : 168}" height="${compact ? 55 : footer ? 64 : 54}" alt="Inmobiliaria Noguera" decoding="async">
   </span>`;
 }
 
@@ -182,7 +184,7 @@ function publicFooter() {
   return `<footer class="footer">
     <div class="container footer-cta"><div><span class="footer-kicker">¿Hablamos de tu próximo paso?</span><h2>Comprar, vender o alquilar empieza por una conversación clara.</h2></div><div class="footer-cta-actions"><a href="tel:${BUSINESS.phoneHref}" class="btn btn-light">${icons.phone} ${esc(BUSINESS.phone)}</a><a href="/contacto" data-link class="btn btn-outline-light">Escribir al equipo</a></div></div>
     <div class="container footer-grid">
-      <div class="footer-brand-col"><a href="/" data-link class="footer-logo-link">${logo({ footer: true })}</a><p class="footer-intro">Inmuebles y acompañamiento inmobiliario en Écija y comarca desde una oficina a la que puedes venir, llamar y volver.</p><div class="footer-social"><a href="${attr(BUSINESS.instagram)}" target="_blank" rel="noopener">Instagram</a><a href="${attr(BUSINESS.facebook)}" target="_blank" rel="noopener">Facebook</a></div></div>
+      <div class="footer-brand-col"><a href="/" data-link class="footer-brand-link">${logo({ footer: true })}</a><p class="footer-intro">Inmuebles y acompañamiento inmobiliario en Écija y comarca desde una oficina a la que puedes venir, llamar y volver.</p><div class="footer-social"><a href="${attr(BUSINESS.instagram)}" target="_blank" rel="noopener">Instagram</a><a href="${attr(BUSINESS.facebook)}" target="_blank" rel="noopener">Facebook</a></div></div>
       <div><h4>Buscar</h4><div class="footer-links"><a href="/pisos-venta-ecija" data-link>Pisos en venta</a><a href="/casas-venta-ecija" data-link>Casas en venta</a><a href="/alquiler-ecija" data-link>Alquiler en Écija</a><a href="/alquiler-vacacional" data-link>Vacacional</a></div></div>
       <div><h4>Servicios</h4><div class="footer-links"><a href="/valoracion-vivienda-ecija" data-link>Valorar vivienda</a><a href="/vender-vivienda-ecija" data-link>Vender en Écija</a><a href="/guias" data-link>Guías inmobiliarias</a><a href="/admin" data-link>Zona privada</a></div></div>
       <div><h4>Oficina</h4><div class="footer-links"><span>${esc(BUSINESS.address)}<br>${esc(BUSINESS.city)}</span><a href="tel:${BUSINESS.phoneHref}">${esc(BUSINESS.phone)}</a><a href="tel:${BUSINESS.mobileHref}">${esc(BUSINESS.mobile)}</a><a href="mailto:${BUSINESS.email}">${esc(BUSINESS.email)}</a><span>${esc(BUSINESS.hours)}</span></div></div>
