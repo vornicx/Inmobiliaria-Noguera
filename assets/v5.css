@@ -5,18 +5,19 @@
   --font-display: "Manrope", system-ui, sans-serif;
   --font-body: "DM Sans", system-ui, sans-serif;
   --font-serif: var(--font-display);
+  /* tokens base (v6 los redefine con --brand-*; aquí fallback seguro) */
   --v5-burgundy: #991f36;
   --v5-burgundy-deep: #7a1528;
   --v5-burgundy-soft: #b33a50;
-  --v5-ochre: #d4a400; /* dorado legible en texto */
-  --v5-ochre-fill: #fecc02; /* amarillo oficial del logo */
+  --v5-ochre: #c9a000;
+  --v5-ochre-fill: #fecc02;
   --v5-ochre-light: #ffe066;
   --v5-cream: #f6f2eb;
   --v5-paper: #fffdf9;
   --v5-sand: #e7ded2;
-  --v5-ink: #201d1b;
-  --v5-muted: #6f6862;
-  --v5-line: #ddd4ca;
+  --v5-ink: #211d1b;
+  --v5-muted: #6a625d;
+  --v5-line: #ded5cb;
   --v5-success: #21704b;
   --v5-warning: #a65f16;
   --v5-danger: #a33131;

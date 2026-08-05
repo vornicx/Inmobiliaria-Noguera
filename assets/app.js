@@ -146,14 +146,19 @@ function getPath() { return window.location.pathname.replace(/\/+$/, '') || '/';
 function queryParams() { return new URLSearchParams(window.location.search); }
 function isAdminPath() { return getPath().startsWith('/admin'); }
 
-function logo({ light = false, compact = false, footer = false } = {}) {
-  const src = footer
-    ? '/public/images/brand/logo-noguera-cabecera-transparent.png'
-    : compact
-      ? '/public/images/brand/logo-noguera-admin-transparent.png'
-      : '/public/images/brand/logo-noguera-cabecera-transparent.png';
-  return `<span class="brand ${light ? 'brand-light' : ''} ${compact ? 'brand-compact' : ''} ${footer ? 'brand-footer' : ''}" aria-label="Inmobiliaria Noguera">
-    <img class="brand-logo" src="${src}" width="${compact ? 148 : footer ? 200 : 168}" height="${compact ? 55 : footer ? 64 : 54}" alt="Inmobiliaria Noguera" decoding="async">
+function logo({ compact = false, footer = false } = {}) {
+  // Dos variantes: el CSS elige light/dark según el fondo (header, pie, admin, login).
+  const lightSrc = compact
+    ? '/public/images/brand/logo-compact-on-light.png'
+    : '/public/images/brand/logo-on-light.png';
+  const darkSrc = compact
+    ? '/public/images/brand/logo-compact-on-dark.png'
+    : '/public/images/brand/logo-on-dark.png';
+  const w = compact ? 148 : footer ? 200 : 168;
+  const h = compact ? 55 : footer ? 64 : 54;
+  return `<span class="brand ${compact ? 'brand-compact' : ''} ${footer ? 'brand-footer' : ''}" aria-label="Inmobiliaria Noguera">
+    <img class="brand-logo brand-logo-light" src="${lightSrc}" width="${w}" height="${h}" alt="Inmobiliaria Noguera" decoding="async">
+    <img class="brand-logo brand-logo-dark" src="${darkSrc}" width="${w}" height="${h}" alt="" decoding="async" aria-hidden="true">
   </span>`;
 }
 
@@ -168,7 +173,7 @@ function navLink(path, label) {
 function publicHeader() {
   const home = getPath() === '/';
   return `<header class="site-header ${home ? 'header-overlay' : 'header-solid'}" id="site-header"><div class="container header-inner">
-    <a href="/" data-link class="brand-link">${logo({ light: home })}</a>
+    <a href="/" data-link class="brand-link">${logo()}</a>
     <nav class="nav" aria-label="Navegación principal">
       ${navLink('/inmuebles', 'Inmuebles')}${navLink('/vender-vivienda-ecija', 'Vender')}${navLink('/financiacion', 'Financiación')}${navLink('/alquiler-vacacional', 'Vacacional')}${navLink('/nosotros', 'La agencia')}${navLink('/guias', 'Guías')}${navLink('/contacto', 'Contacto')}
     </nav>
@@ -190,7 +195,7 @@ function publicFooter() {
   return `<footer class="footer">
     <div class="container footer-cta"><div><span class="footer-kicker">¿Hablamos de tu próximo paso?</span><h2>Comprar, vender o alquilar empieza por una conversación clara.</h2></div><div class="footer-cta-actions"><a href="tel:${BUSINESS.phoneHref}" class="btn btn-light">${icons.phone} ${esc(BUSINESS.phone)}</a><a href="/contacto" data-link class="btn btn-outline-light">Escribir al equipo</a></div></div>
     <div class="container footer-grid">
-      <div class="footer-brand-col"><a href="/" data-link class="footer-brand-link">${logo({ footer: true })}</a><p class="footer-intro">Inmuebles y acompañamiento inmobiliario en Écija y comarca desde una oficina a la que puedes venir, llamar y volver.</p><div class="footer-social"><a href="${attr(BUSINESS.instagram)}" target="_blank" rel="noopener">Instagram</a><a href="${attr(BUSINESS.facebook)}" target="_blank" rel="noopener">Facebook</a></div></div>
+      <div class="footer-brand-col"><a href="/" data-link class="footer-brand-link brand-on-dark">${logo({ footer: true })}</a><p class="footer-intro">Inmuebles y acompañamiento inmobiliario en Écija y comarca desde una oficina a la que puedes venir, llamar y volver.</p><div class="footer-social"><a href="${attr(BUSINESS.instagram)}" target="_blank" rel="noopener">Instagram</a><a href="${attr(BUSINESS.facebook)}" target="_blank" rel="noopener">Facebook</a></div></div>
       <div><h4>Buscar</h4><div class="footer-links"><a href="/pisos-venta-ecija" data-link>Pisos en venta</a><a href="/casas-venta-ecija" data-link>Casas en venta</a><a href="/alquiler-ecija" data-link>Alquiler en Écija</a><a href="/alquiler-vacacional" data-link>Vacacional</a></div></div>
       <div><h4>Servicios</h4><div class="footer-links"><a href="/valoracion-vivienda-ecija" data-link>Valorar vivienda</a><a href="/vender-vivienda-ecija" data-link>Vender en Écija</a><a href="/guias" data-link>Guías inmobiliarias</a><a href="/admin" data-link>Zona privada</a></div></div>
       <div><h4>Oficina</h4><div class="footer-links"><span>${esc(BUSINESS.address)}<br>${esc(BUSINESS.city)}</span><a href="tel:${BUSINESS.phoneHref}">${esc(BUSINESS.phone)}</a><a href="tel:${BUSINESS.mobileHref}">${esc(BUSINESS.mobile)}</a><a href="mailto:${BUSINESS.email}">${esc(BUSINESS.email)}</a><span>${esc(BUSINESS.hours)}</span></div></div>
@@ -557,13 +562,13 @@ function adminNavLink(path, label, icon) {
 
 function adminLayout(content) {
   const email = service.getSession()?.user?.email || 'Administrador';
-  return `<div class="admin-shell"><aside class="admin-sidebar"><div class="admin-brand-row"><a href="/admin" data-link>${logo({ light:true, compact:true })}</a><button class="admin-mobile-close" data-action="toggle-admin-nav" aria-label="Cerrar navegación">${icons.close}</button></div><nav class="admin-nav">${adminNavLink('/admin','Resumen',icons.grid)}${adminNavLink('/admin/inmuebles','Inmuebles',icons.building)}${adminNavLink('/admin/leads','Solicitudes',icons.inbox)}<a href="/" data-link>${icons.external}<span>Ver web pública</span></a></nav><div class="admin-sidebar-foot">${service.isDemo()?'<div class="demo-pill">Modo demo · cambios locales</div>':''}<button class="btn btn-ghost" data-action="logout">${icons.logout}<span>Cerrar sesión</span></button></div></aside><div class="admin-main"><header class="admin-topbar"><button class="admin-menu-button" data-action="toggle-admin-nav" aria-label="Abrir navegación">${icons.menu}</button><div><strong>Panel comercial</strong><div class="small muted">${esc(email)}</div></div><div class="admin-top-actions"><a href="/" data-link class="btn btn-outline btn-sm admin-view-site">${icons.external} Ver web</a><a href="/admin/inmuebles/nuevo" data-link class="btn btn-accent btn-sm">${icons.plus} Nuevo inmueble</a></div></header><main class="admin-content">${content}</main></div></div>`;
+  return `<div class="admin-shell"><aside class="admin-sidebar"><div class="admin-brand-row"><a href="/admin" data-link class="brand-on-dark">${logo({ compact: true })}</a><button class="admin-mobile-close" data-action="toggle-admin-nav" aria-label="Cerrar navegación">${icons.close}</button></div><nav class="admin-nav">${adminNavLink('/admin','Resumen',icons.grid)}${adminNavLink('/admin/inmuebles','Inmuebles',icons.building)}${adminNavLink('/admin/leads','Solicitudes',icons.inbox)}<a href="/" data-link>${icons.external}<span>Ver web pública</span></a></nav><div class="admin-sidebar-foot">${service.isDemo()?'<div class="demo-pill">Modo demo · cambios locales</div>':''}<button class="btn btn-ghost" data-action="logout">${icons.logout}<span>Cerrar sesión</span></button></div></aside><div class="admin-main"><header class="admin-topbar"><button class="admin-menu-button" data-action="toggle-admin-nav" aria-label="Abrir navegación">${icons.menu}</button><div><strong>Panel comercial</strong><div class="small muted">${esc(email)}</div></div><div class="admin-top-actions"><a href="/" data-link class="btn btn-outline btn-sm admin-view-site">${icons.external} Ver web</a><a href="/admin/inmuebles/nuevo" data-link class="btn btn-accent btn-sm">${icons.plus} Nuevo inmueble</a></div></header><main class="admin-content">${content}</main></div></div>`;
 }
 
 
 function loginView() {
   updateMeta({ title:'Acceso privado · Inmobiliaria Noguera', description:'Panel privado de gestión de inmuebles.' });
-  return `<div class="login-page"><div class="login-visual"><a href="/" data-link>${logo({light:true})}</a><div class="login-quote"><p>Una cartera ordenada se vende mejor.</p><span>Panel privado de Inmobiliaria Noguera</span></div></div><div class="login-form-wrap"><div class="login-card"><a href="/" data-link class="small muted">← Volver a la web</a><h1>Acceso privado</h1><p>Gestiona inmuebles, imágenes y solicitudes desde un único lugar.</p><form class="form-stack" data-form="login"><input class="input" type="email" name="email" placeholder="Correo electrónico" autocomplete="username" required><input class="input" type="password" name="password" placeholder="Contraseña" autocomplete="current-password" required><button class="btn btn-primary btn-wide" type="submit">Entrar al panel ${icons.arrow}</button><div data-form-message></div></form>${service.isDemo()?'<div class="demo-credentials"><strong>Acceso de demostración</strong><br>admin@noguera.demo<br>demo1234</div>':''}</div></div></div>`;
+  return `<div class="login-page"><div class="login-visual"><a href="/" data-link class="brand-on-dark">${logo()}</a><div class="login-quote"><p>Una cartera ordenada se vende mejor.</p><span>Panel privado de Inmobiliaria Noguera</span></div></div><div class="login-form-wrap"><div class="login-card"><a href="/" data-link class="small muted">← Volver a la web</a><h1>Acceso privado</h1><p>Gestiona inmuebles, imágenes y solicitudes desde un único lugar.</p><form class="form-stack" data-form="login"><input class="input" type="email" name="email" placeholder="Correo electrónico" autocomplete="username" required><input class="input" type="password" name="password" placeholder="Contraseña" autocomplete="current-password" required><button class="btn btn-primary btn-wide" type="submit">Entrar al panel ${icons.arrow}</button><div data-form-message></div></form>${service.isDemo()?'<div class="demo-credentials"><strong>Acceso de demostración</strong><br>admin@noguera.demo<br>demo1234</div>':''}</div></div></div>`;
 }
 
 function adminDashboardView() {

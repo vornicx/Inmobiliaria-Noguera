@@ -4,14 +4,14 @@
 
 | Archivo | Uso |
 |---|---|
-| `logo-noguera-cabecera-transparent.png` | Cabecera y pie públicos (logo oficial) |
-| `logo-noguera-admin-transparent.png` | Panel y login |
-| `logo-oficial.png` | Schema.org / Open Graph de marca |
-| `apple-touch-icon.png` | Icono iOS |
-| `favicon-32.png` | Favicon PNG |
+| `logo-on-light.png` | Fondos claros (cabecera sólida, catálogo) |
+| `logo-on-dark.png` | Fondos oscuros (hero overlay, pie, login) |
+| `logo-compact-on-light.png` / `logo-compact-on-dark.png` | Versión compacta (panel admin) |
+| `logo-primary.png` | Copia principal de marca |
+| `apple-touch-icon.png` / `favicon-32.png` | Iconos |
 
-Origen: logo oficial de [inmobiliarianoguera.com](https://inmobiliarianoguera.com/wp-content/uploads/2014/11/logo-noguera-cabecera.gif).
+El CSS elige automáticamente la variante light/dark. Origen: logo oficial de inmobiliarianoguera.com.
 
 ## Inmuebles
 
-Las fotografías de la carpeta raíz son material de demostración tomado de anuncios públicos. Antes del lanzamiento definitivo deben sustituirse por originales autorizados desde el panel `/admin`.
+Las fotografías de la carpeta raíz son material de demostración. Antes del lanzamiento deben sustituirse por originales autorizados desde `/admin`.

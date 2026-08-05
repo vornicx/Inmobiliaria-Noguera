@@ -1,20 +1,20 @@
-/* Premium public experience — isolated from the administration UI */
+/* Premium public experience — paleta alineada con marca Noguera */
 .public-shell {
-  --premium-ink: #101716;
-  --premium-ink-soft: #27302e;
-  --premium-night: #0b1514;
-  --premium-forest: #17312d;
-  --premium-stone: #eee9df;
-  --premium-cream: #f8f5ef;
+  --premium-ink: var(--brand-ink, #211d1b);
+  --premium-ink-soft: var(--brand-muted, #6a625d);
+  --premium-night: var(--brand-burgundy-deep, #7a1528);
+  --premium-forest: var(--brand-burgundy, #991f36);
+  --premium-stone: var(--brand-sand, #e7ded2);
+  --premium-cream: var(--brand-cream, #f6f2eb);
   --premium-white: #fff;
-  --premium-brass: #bca16e;
-  --premium-brass-light: #d9c49a;
-  --premium-line: rgba(16, 23, 22, .14);
+  --premium-brass: var(--brand-gold-text, #c9a000);
+  --premium-brass-light: var(--brand-gold-soft, #ffe066);
+  --premium-line: var(--brand-line, #ded5cb);
   --premium-line-light: rgba(255,255,255,.18);
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
   --font-serif: "Manrope", ui-sans-serif, system-ui, sans-serif;
   color: var(--premium-ink);
-  background: var(--premium-cream);
+  background: var(--brand-paper, #fffdf9);
   font-family: var(--font-sans);
   overflow: clip;
 }
@@ -38,8 +38,8 @@
 .public-shell .btn { border-radius: 0; min-height: 54px; padding-inline: 25px; letter-spacing: .015em; font-size: .82rem; }
 .public-shell .btn svg { transition: transform .25s ease; }
 .public-shell .btn:hover svg { transform: translateX(4px); }
-.public-shell .btn-primary { background: var(--premium-night); box-shadow: none; }
-.public-shell .btn-primary:hover { background: var(--premium-forest); }
+.public-shell .btn-primary { background: var(--premium-forest); box-shadow: none; color: #fff; }
+.public-shell .btn-primary:hover { background: var(--premium-night); }
 .public-shell .btn-outline { border-color: var(--premium-line); }
 .public-shell .btn-light { background: white; }
 

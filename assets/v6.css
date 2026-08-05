@@ -1,34 +1,71 @@
 /* Inmobiliaria Noguera · V6
    Corrección rigurosa de layout, responsive, catálogo, ficha, cookies y panel. */
+/* Paleta oficial Noguera (logo): burdeos + oro + papel */
 :root {
-  --v6-burgundy: #991f36;
-  --v6-burgundy-deep: #7a1528;
-  --v6-ochre: #d4a400;
-  --v6-ochre-fill: #fecc02;
-  --v6-paper: #fffdfa;
-  --v6-cream: #f5f0e9;
-  --v6-line: #ded5cb;
-  --v6-ink: #211d1b;
-  --v6-muted: #6a625d;
-  --v6-shadow: 0 18px 50px rgba(44, 23, 23, .10);
-  --v5-burgundy: #991f36;
-  --v5-burgundy-deep: #7a1528;
-  --v5-ochre: #d4a400;
-  --v5-ochre-fill: #fecc02;
-  --v5-ochre-light: #ffe066;
+  --brand-burgundy: #991f36;
+  --brand-burgundy-deep: #7a1528;
+  --brand-burgundy-dark: #2c0d14;
+  --brand-burgundy-soft: #b33a50;
+  --brand-gold: #fecc02;
+  --brand-gold-text: #c9a000;
+  --brand-gold-soft: #ffe066;
+  --brand-paper: #fffdf9;
+  --brand-cream: #f6f2eb;
+  --brand-sand: #e7ded2;
+  --brand-ink: #211d1b;
+  --brand-muted: #6a625d;
+  --brand-line: #ded5cb;
+  --brand-shadow: 0 18px 50px rgba(44, 23, 23, .10);
+  /* alias v5/v6/premium */
+  --v6-burgundy: var(--brand-burgundy);
+  --v6-burgundy-deep: var(--brand-burgundy-deep);
+  --v6-ochre: var(--brand-gold-text);
+  --v6-ochre-fill: var(--brand-gold);
+  --v6-paper: var(--brand-paper);
+  --v6-cream: var(--brand-cream);
+  --v6-line: var(--brand-line);
+  --v6-ink: var(--brand-ink);
+  --v6-muted: var(--brand-muted);
+  --v6-shadow: var(--brand-shadow);
+  --v5-burgundy: var(--brand-burgundy);
+  --v5-burgundy-deep: var(--brand-burgundy-deep);
+  --v5-burgundy-soft: var(--brand-burgundy-soft);
+  --v5-ochre: var(--brand-gold-text);
+  --v5-ochre-fill: var(--brand-gold);
+  --v5-ochre-light: var(--brand-gold-soft);
+  --v5-paper: var(--brand-paper);
+  --v5-cream: var(--brand-cream);
+  --v5-ink: var(--brand-ink);
+  --v5-muted: var(--brand-muted);
+  --v5-line: var(--brand-line);
+  --premium-night: var(--brand-burgundy-deep);
+  --premium-forest: var(--brand-burgundy);
+  --premium-brass: var(--brand-gold-text);
+  --premium-brass-light: var(--brand-gold-soft);
+  --premium-cream: var(--brand-cream);
+  --premium-paper: var(--brand-paper);
+  --premium-ink: var(--brand-ink);
+  --premium-ink-soft: var(--brand-muted);
+  --premium-line: var(--brand-line);
+  --premium-stone: var(--brand-sand);
+  --premium-white: #fff;
 }
 
 html {
   overflow-x: clip;
-  background: #2c0d14;
+  background: var(--brand-burgundy-dark);
 }
 body {
   /* overflow-x en body rompe position:fixed del banner de cookies en algunos navegadores */
   overflow-x: visible;
-  background: #2c0d14;
+  background: var(--brand-burgundy-dark);
   margin: 0;
+  color: var(--brand-ink);
 }
-.public-shell { background: var(--v6-paper); }
+.public-shell {
+  background: var(--brand-paper);
+  color: var(--brand-ink);
+}
 .public-shell.cookie-open,
 .public-shell.cookie-open .footer,
 body.cookie-open .footer {
@@ -36,14 +73,21 @@ body.cookie-open .footer {
 }
 .public-shell .h1 { font-size: clamp(2.45rem, 4.5vw, 4.9rem); line-height: 1.02; letter-spacing: -.045em; }
 .public-shell .h2 { font-size: clamp(2rem, 3.2vw, 3.65rem); line-height: 1.06; letter-spacing: -.038em; }
-.public-shell .lead { max-width: 690px; line-height: 1.65; }
+.public-shell .lead { max-width: 690px; line-height: 1.65; color: var(--brand-muted); }
 .public-shell .section { padding: 92px 0; }
 .public-shell .section-sm { padding: 64px 0; }
 .section-heading-row { align-items: end; gap: 48px; margin-bottom: 38px; }
 .section-heading-row > * { min-width: 0; }
 
-/* Logo oficial */
-.brand, .brand-link { display: inline-flex; align-items: center; line-height: 0; }
+/* —— Logo: siempre elige variante light/dark según el fondo —— */
+.brand,
+.brand-link,
+.footer-brand-link {
+  display: inline-flex;
+  align-items: center;
+  line-height: 0;
+  position: relative;
+}
 .brand-logo {
   display: block;
   width: auto;
@@ -51,47 +95,100 @@ body.cookie-open .footer {
   max-width: min(186px, 42vw);
   object-fit: contain;
   object-position: left center;
+  filter: none !important;
+  background: none !important;
 }
 .brand-compact .brand-logo { height: 38px; max-width: 148px; }
-.brand-light .brand-logo {
-  filter: drop-shadow(0 1px 8px rgba(0,0,0,.18));
+.brand-footer .brand-logo { height: 54px; max-width: min(210px, 70vw); }
+
+/* Por defecto: fondo claro → logo color limpio */
+.brand-logo-light { display: block !important; }
+.brand-logo-dark { display: none !important; }
+
+/* Fondos oscuros: pie, admin, login, header overlay (sin scroll) */
+.brand-on-dark .brand-logo-light,
+.footer .brand-logo-light,
+.admin-sidebar .brand-logo-light,
+.login-visual .brand-logo-light,
+.site-header.header-overlay:not(.scrolled) .brand-logo-light {
+  display: none !important;
 }
-.site-header.header-overlay .brand-logo {
-  filter: drop-shadow(0 2px 10px rgba(0,0,0,.35)) drop-shadow(0 0 1px rgba(255,255,255,.55));
+.brand-on-dark .brand-logo-dark,
+.footer .brand-logo-dark,
+.admin-sidebar .brand-logo-dark,
+.login-visual .brand-logo-dark,
+.site-header.header-overlay:not(.scrolled) .brand-logo-dark {
+  display: block !important;
 }
-.site-header.header-overlay.scrolled .brand-logo { filter: none; }
-/* Pie: logo oficial sin placa blanca, integrado en el fondo oscuro */
+
+/* Header sólido o overlay ya scrolleado: fondo claro */
+.site-header.header-solid .brand-logo-light,
+.site-header.header-overlay.scrolled .brand-logo-light {
+  display: block !important;
+}
+.site-header.header-solid .brand-logo-dark,
+.site-header.header-overlay.scrolled .brand-logo-dark {
+  display: none !important;
+}
+
+.admin-brand-row .brand-logo,
+.login-visual .brand-logo { height: 44px; max-width: 176px; }
+
+/* Pie y superficies de marca unificadas */
 .public-shell .footer,
 .footer {
-  background: #2c0d14 !important;
+  background: var(--brand-burgundy-dark) !important;
   color: rgba(255, 255, 255, .72);
 }
 .footer-brand-link {
-  display: inline-flex;
-  align-items: center;
   margin: 0 0 18px;
   padding: 0;
   background: none !important;
   border: 0;
   box-shadow: none !important;
-  line-height: 0;
 }
-.footer-brand-col .brand-footer,
-.footer-brand-col .brand-logo {
-  display: block;
-  filter: none !important;
-  background: none !important;
+.footer h4,
+.footer-kicker { color: var(--brand-gold-soft) !important; }
+.public-shell .btn-primary,
+.login-page .btn-primary {
+  background: var(--brand-burgundy) !important;
+  border-color: var(--brand-burgundy) !important;
+  color: #fff !important;
 }
-.footer-brand-col .brand-logo {
-  height: 56px;
-  width: auto;
-  max-width: min(220px, 70vw);
-  object-fit: contain;
-  object-position: left center;
+.public-shell .btn-primary:hover,
+.login-page .btn-primary:hover {
+  background: var(--brand-burgundy-deep) !important;
+  border-color: var(--brand-burgundy-deep) !important;
 }
-.admin-brand-row .brand-logo,
-.login-visual .brand-logo { height: 42px; max-width: 170px; filter: drop-shadow(0 1px 6px rgba(0,0,0,.25)); }
-.login-form-wrap .brand-logo { height: 40px; }
+.public-shell .btn-accent,
+.admin-shell .btn-accent {
+  background: var(--brand-gold) !important;
+  border-color: var(--brand-gold) !important;
+  color: var(--brand-ink) !important;
+}
+.header-solid .btn-header {
+  background: var(--brand-burgundy) !important;
+  color: #fff !important;
+  border-color: var(--brand-burgundy) !important;
+}
+.home-quick-row > a.home-quick-all {
+  background: var(--brand-burgundy);
+  border-color: var(--brand-burgundy);
+}
+.home-quick-row > a:hover {
+  border-color: var(--brand-burgundy);
+  color: var(--brand-burgundy);
+}
+.admin-sidebar {
+  background: var(--brand-burgundy-dark) !important;
+}
+.admin-nav a.active {
+  background: var(--brand-gold) !important;
+  color: var(--brand-ink) !important;
+}
+.login-visual {
+  background: linear-gradient(145deg, rgba(122,21,40,.93), rgba(153,31,54,.62)), url('/public/images/8631-chalet-urbanizacion.jpeg') center/cover !important;
+}
 
 /* Consentimiento: montado en #cookie-root (fuera de #app), barra inferior visible */
 #cookie-root {
@@ -118,7 +215,7 @@ body.cookie-open .footer {
   padding: 0 !important;
   border-radius: 0 !important;
   transform: none !important;
-  background: #1a0a0f !important;
+  background: var(--brand-burgundy-dark) !important;
   color: #fff !important;
   border: 0 !important;
   border-top: 1px solid rgba(255,255,255,.14) !important;
@@ -173,8 +270,8 @@ body.cookie-open .footer {
 }
 .cookie-actions .btn-outline:hover { background: rgba(255,255,255,.1) !important; }
 .cookie-actions .btn-primary {
-  background: var(--v6-burgundy) !important;
-  border-color: var(--v6-burgundy) !important;
+  background: var(--brand-burgundy) !important;
+  border-color: var(--brand-burgundy) !important;
   color: #fff !important;
 }
 .cookie-actions a {
