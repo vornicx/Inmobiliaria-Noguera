@@ -437,12 +437,27 @@ function filterProperties(params) {
       (!featured || p.featured);
   });
   const sort = params.get('sort') || 'featured';
+  /* Un inmueble sin precio se muestra como “Consultar”. Comparándolo como 0
+     salía el primero al ordenar de menor a mayor, es decir aparecía como el
+     más barato. Y una superficie ausente daba NaN, que deja el orden
+     indefinido. Los valores que faltan van siempre al final. */
+  const alFinal = (fn) => (a, b) => {
+    const va = fn(a); const vb = fn(b);
+    const na = !Number.isFinite(va) || va <= 0;
+    const nb = !Number.isFinite(vb) || vb <= 0;
+    if (na && nb) return 0;
+    if (na) return 1;
+    if (nb) return -1;
+    return null;
+  };
+  const precio = (p) => Number(p.price);
+  const superficie = (p) => Number(p.area || p.plot_area);
   const sorters = {
     featured: (a,b) => Number(b.featured)-Number(a.featured) || new Date(b.created_at)-new Date(a.created_at),
     newest: (a,b) => new Date(b.created_at)-new Date(a.created_at),
-    priceAsc: (a,b) => Number(a.price)-Number(b.price),
-    priceDesc: (a,b) => Number(b.price)-Number(a.price),
-    areaDesc: (a,b) => Number(b.area || b.plot_area)-Number(a.area || a.plot_area),
+    priceAsc: (a,b) => alFinal(precio)(a,b) ?? (precio(a)-precio(b)),
+    priceDesc: (a,b) => alFinal(precio)(a,b) ?? (precio(b)-precio(a)),
+    areaDesc: (a,b) => alFinal(superficie)(a,b) ?? (superficie(b)-superficie(a)),
   };
   return result.sort(sorters[sort] || sorters.featured);
 }
@@ -956,6 +971,27 @@ function syncListButtons() {
   updateCounts();
 }
 
+/* El menú móvil es sólo una clase y el icono del botón. */
+function syncMobileMenu() {
+  document.querySelector('.mobile-menu')?.classList.toggle('open', state.mobileMenu);
+  const btn = document.querySelector('.mobile-toggle');
+  if (!btn) return;
+  btn.innerHTML = state.mobileMenu ? icons.close : icons.menu;
+  btn.setAttribute('aria-label', state.mobileMenu ? 'Cerrar menú' : 'Abrir menú');
+  btn.setAttribute('aria-expanded', String(state.mobileMenu));
+}
+
+/* Cuadrícula y lista comparten tarjeta: sólo cambia la clase de la rejilla. */
+function syncCatalogView() {
+  const grid = document.querySelector('.catalog-main .property-grid');
+  if (grid) {
+    grid.classList.toggle('list', state.catalogView === 'list');
+    grid.classList.toggle('compact', state.catalogView !== 'list');
+  }
+  document.querySelector('[data-action="view-grid"]')?.classList.toggle('active', state.catalogView !== 'list');
+  document.querySelector('[data-action="view-list"]')?.classList.toggle('active', state.catalogView === 'list');
+}
+
 function refreshAfterListChange() {
   if (['/favoritos', '/comparar'].includes(getPath())) renderRoute({ scroll: false });
   else syncListButtons();
@@ -981,7 +1017,7 @@ function toggleCompare(id) {
 async function handleAction(button, event) {
   const action = button.dataset.action;
   if (!action) return;
-  if (action === 'toggle-menu') { state.mobileMenu = !state.mobileMenu; renderRoute({scroll:false}); }
+  if (action === 'toggle-menu') { state.mobileMenu = !state.mobileMenu; syncMobileMenu(); }
   if (action === 'favorite') toggleFavorite(button.dataset.id);
   if (action === 'compare') toggleCompare(button.dataset.id);
   if (action === 'share') {
@@ -1008,8 +1044,11 @@ async function handleAction(button, event) {
   if (action === 'clear-filters') navigate('/inmuebles');
   if (action === 'load-map') { const shell=button.closest('[data-map-shell]'); if(shell){ shell.innerHTML=`<iframe class="map-frame" src="${attr(button.dataset.mapSrc)}" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Mapa aproximado del inmueble"></iframe>`; } }
   if (action === 'toggle-admin-nav') document.querySelector('.admin-shell')?.classList.toggle('admin-nav-open');
-  if (action === 'view-grid') { state.catalogView='grid'; localStorage.setItem('noguera-view','grid'); renderRoute({scroll:false}); }
-  if (action === 'view-list') { state.catalogView='list'; localStorage.setItem('noguera-view','list'); renderRoute({scroll:false}); }
+  if (action === 'view-grid' || action === 'view-list') {
+    state.catalogView = action === 'view-list' ? 'list' : 'grid';
+    localStorage.setItem('noguera-view', state.catalogView);
+    syncCatalogView();
+  }
   if (action === 'save-search') {
     const params = queryParams();
     const labels = [];
