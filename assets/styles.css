@@ -329,15 +329,72 @@ input, select, textarea { color: var(--ink); }
 
 /* Cookie banner: estilos finales en v6.css */
 
-.modal-backdrop { position: fixed; inset: 0; z-index: 100; background: rgba(7,15,14,.82); backdrop-filter: blur(8px); display: grid; place-items: center; padding: 24px; }
+#modal-root { position: relative; z-index: 200000; }
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200000;
+  background: rgba(20, 8, 12, .88);
+  backdrop-filter: blur(8px);
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  cursor: zoom-out;
+}
 .modal { width: min(1100px, 100%); max-height: 92vh; overflow: auto; border-radius: var(--radius); background: var(--white); position: relative; }
-.modal-close { position: fixed; right: 32px; top: 24px; z-index: 104; background: white; }
-.gallery-modal { background: transparent; overflow: visible; }
-.gallery-modal img { max-height: 86vh; width: auto; max-width: 100%; object-fit: contain; border-radius: 12px; margin: auto; }
-.modal-nav { position: fixed; top: 50%; transform: translateY(-50%); z-index: 103; background: white; }
+.modal-close {
+  position: fixed;
+  right: 32px;
+  top: 24px;
+  z-index: 200010;
+  background: white;
+  color: #211d1b;
+  cursor: pointer;
+  pointer-events: auto;
+}
+.gallery-modal {
+  background: transparent;
+  overflow: visible;
+  cursor: default;
+  pointer-events: auto;
+}
+.gallery-modal img {
+  max-height: 86vh;
+  width: auto;
+  max-width: min(1100px, 92vw);
+  object-fit: contain;
+  border-radius: 12px;
+  margin: auto;
+  display: block;
+  box-shadow: 0 20px 60px rgba(0,0,0,.35);
+}
+.modal-nav {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 200010;
+  background: white;
+  color: #211d1b;
+  cursor: pointer;
+  pointer-events: auto;
+  width: 48px;
+  height: 48px;
+}
 .modal-prev { left: 25px; }
 .modal-next { right: 25px; }
-.modal-counter { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%); color: white; font-size: .85rem; }
+.modal-counter {
+  position: fixed;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 200010;
+  color: white;
+  font-size: .85rem;
+  background: rgba(0,0,0,.45);
+  padding: 6px 12px;
+  border-radius: 999px;
+  pointer-events: none;
+}
 
 .toast-region { position: fixed; z-index: 200; right: 20px; top: 100px; display: grid; gap: 10px; }
 .toast { min-width: 260px; max-width: 360px; background: var(--ink); color: white; border-radius: 14px; padding: 14px 16px; box-shadow: var(--shadow-md); animation: toast-in .25s ease; }

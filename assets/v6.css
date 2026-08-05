@@ -197,7 +197,8 @@ body.cookie-open .footer {
   right: 0 !important;
   bottom: 0 !important;
   top: auto !important;
-  z-index: 2147483000 !important;
+  /* Por debajo de la galería (#modal-root ~200000) para no bloquearla */
+  z-index: 150000 !important;
   pointer-events: none;
 }
 #cookie-root:not([hidden]) { pointer-events: auto; }

@@ -858,16 +858,47 @@ function setCookieConsent(value) {
 
 function openGallery(index = 0) {
   const images = state.currentProperty?.images || [];
-  if (!images.length) return;
-  state.gallery = { images, index: Math.max(0, Math.min(index, images.length-1)) };
+  if (!images.length) {
+    toast('No hay imágenes para mostrar.', 'error');
+    return;
+  }
+  state.gallery = { images, index: Math.max(0, Math.min(Number(index) || 0, images.length - 1)) };
   document.body.classList.add('modal-open');
   renderGalleryModal();
 }
+
 function renderGalleryModal() {
-  const {images,index} = state.gallery;
-  modalRoot.innerHTML = `<div class="modal-backdrop" data-action="close-modal"><button class="icon-btn modal-close" data-action="close-modal" aria-label="Cerrar">${icons.close}</button><button class="icon-btn modal-nav modal-prev" data-action="gallery-prev" aria-label="Anterior">${icons.arrowLeft}</button><div class="modal gallery-modal" data-modal-content><img src="${attr(safeImage(images[index]))}" alt="Imagen ${index+1}"></div><button class="icon-btn modal-nav modal-next" data-action="gallery-next" aria-label="Siguiente">${icons.arrowRight}</button><div class="modal-counter">${index+1} / ${images.length}</div></div>`;
+  if (!modalRoot) return;
+  const images = state.gallery?.images || [];
+  if (!images.length) {
+    closeModal();
+    return;
+  }
+  const index = Math.max(0, Math.min(state.gallery.index || 0, images.length - 1));
+  state.gallery.index = index;
+  modalRoot.innerHTML = `<div class="modal-backdrop" data-action="close-modal" role="presentation">
+    <button type="button" class="icon-btn modal-close" data-action="close-modal" aria-label="Cerrar galería">${icons.close}</button>
+    <button type="button" class="icon-btn modal-nav modal-prev" data-action="gallery-prev" aria-label="Imagen anterior">${icons.arrowLeft}</button>
+    <div class="modal gallery-modal" data-modal-content>
+      <img src="${attr(safeImage(images[index]))}" alt="Imagen ${index + 1} de ${images.length}" decoding="async">
+    </div>
+    <button type="button" class="icon-btn modal-nav modal-next" data-action="gallery-next" aria-label="Imagen siguiente">${icons.arrowRight}</button>
+    <div class="modal-counter" aria-live="polite">${index + 1} / ${images.length}</div>
+  </div>`;
 }
-function closeModal() { modalRoot.innerHTML=''; document.body.classList.remove('modal-open'); }
+
+function closeModal() {
+  if (modalRoot) modalRoot.innerHTML = '';
+  document.body.classList.remove('modal-open');
+}
+
+function stepGallery(delta) {
+  const images = state.gallery?.images || [];
+  if (!images.length) return;
+  const len = images.length;
+  state.gallery.index = (state.gallery.index + delta + len) % len;
+  renderGalleryModal();
+}
 
 function toggleFavorite(id) {
   if (state.favorites.includes(id)) { state.favorites = state.favorites.filter(value=>value!==id); toast('Quitado de favoritos.'); }
@@ -893,10 +924,10 @@ async function handleAction(button, event) {
     const data = { title:button.dataset.title || document.title, text:'Mira este inmueble de Inmobiliaria Noguera', url:window.location.href };
     try { if (navigator.share) await navigator.share(data); else { await navigator.clipboard.writeText(window.location.href); toast('Enlace copiado.', 'success'); } } catch (_) {}
   }
-  if (action === 'open-gallery') openGallery(Number(button.dataset.index||0));
-  if (action === 'close-modal') closeModal();
-  if (action === 'gallery-prev') { state.gallery.index = (state.gallery.index-1+state.gallery.images.length)%state.gallery.images.length; renderGalleryModal(); }
-  if (action === 'gallery-next') { state.gallery.index = (state.gallery.index+1)%state.gallery.images.length; renderGalleryModal(); }
+  if (action === 'open-gallery') { openGallery(Number(button.dataset.index || 0)); return; }
+  if (action === 'close-modal') { closeModal(); return; }
+  if (action === 'gallery-prev') { stepGallery(-1); return; }
+  if (action === 'gallery-next') { stepGallery(1); return; }
   if (action === 'cookies-accept') { setCookieConsent('analytics'); return; }
   if (action === 'cookies-essential') { setCookieConsent('essential'); return; }
   if (action === 'cookies-reset') { localStorage.removeItem('noguera-cookie-consent'); document.documentElement.dataset.cookieConsent = ''; renderRoute({ scroll: false }); toast('Puedes volver a elegir tus preferencias de cookies.'); return; }
@@ -1016,19 +1047,24 @@ async function handleForm(form) {
 }
 
 function onUiClick(event) {
+  const action = event.target.closest('[data-action]');
+  if (action) {
+    // Clic en la foto: no cerrar (solo el fondo del modal)
+    if (action.dataset.action === 'close-modal' && event.target.closest('[data-modal-content]')) return;
+    event.preventDefault();
+    // Los botones de la galería no deben propagar al backdrop (close-modal del padre)
+    if (action.dataset.action === 'gallery-prev' || action.dataset.action === 'gallery-next' || action.dataset.action === 'close-modal') {
+      event.stopPropagation();
+    }
+    handleAction(action, event);
+    return;
+  }
   const contactLink = event.target.closest('a[href^="tel:"],a[href*="wa.me"]');
   if (contactLink) trackEvent(contactLink.href.startsWith('tel:') ? 'click_to_call' : 'click_whatsapp', { link_url: contactLink.href, page_path: getPath() });
   const link = event.target.closest('a[data-link]');
   if (link && !event.metaKey && !event.ctrlKey && !event.shiftKey && event.button === 0) {
     event.preventDefault();
     navigate(link.getAttribute('href'));
-    return;
-  }
-  const action = event.target.closest('[data-action]');
-  if (action) {
-    if (action.dataset.action === 'close-modal' && event.target.closest('[data-modal-content]')) return;
-    event.preventDefault();
-    handleAction(action, event);
     return;
   }
   const tab = event.target.closest('[data-search-tab]');
@@ -1039,8 +1075,8 @@ function onUiClick(event) {
     if (input) input.value = tab.dataset.searchTab;
   }
 }
-app.addEventListener('click', onUiClick);
-cookieRoot.addEventListener('click', onUiClick);
+// Delegación global: galería (#modal-root) y cookies (#cookie-root) están fuera de #app
+document.addEventListener('click', onUiClick);
 
 app.addEventListener('submit', (event) => { const form=event.target.closest('form[data-form]'); if(!form) return; event.preventDefault(); handleForm(form); });
 app.addEventListener('change', (event) => {
@@ -1063,7 +1099,12 @@ function updateImagePreview(input) {
   preview.innerHTML=urls.map(src=>`<div class="image-preview"><img src="${attr(safeImage(src))}" alt="Vista previa"></div>`).join('');
 }
 
-window.addEventListener('popstate',()=>{ state.mobileMenu=false; renderRoute(); });
-window.addEventListener('keydown',(event)=>{ if(event.key==='Escape')closeModal(); if(modalRoot.innerHTML && event.key==='ArrowLeft'){state.gallery.index=(state.gallery.index-1+state.gallery.images.length)%state.gallery.images.length;renderGalleryModal();} if(modalRoot.innerHTML && event.key==='ArrowRight'){state.gallery.index=(state.gallery.index+1)%state.gallery.images.length;renderGalleryModal();} });
+window.addEventListener('popstate', () => { state.mobileMenu = false; closeModal(); renderRoute(); });
+window.addEventListener('keydown', (event) => {
+  if (!modalRoot?.innerHTML) return;
+  if (event.key === 'Escape') { event.preventDefault(); closeModal(); }
+  if (event.key === 'ArrowLeft') { event.preventDefault(); stepGallery(-1); }
+  if (event.key === 'ArrowRight') { event.preventDefault(); stepGallery(1); }
+});
 
 renderRoute();
