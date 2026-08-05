@@ -175,7 +175,7 @@ function businessSchema(origin) {
     '@type': ['RealEstateAgent', 'LocalBusiness'], '@id': `${origin}/#business`,
     name: BUSINESS.name, legalName: BUSINESS.legalName, taxID: BUSINESS.taxId, url: `${origin}/`,
     foundingDate: '2007', image: `${origin}/public/images/8631-chalet-urbanizacion.jpeg`,
-    logo: `${origin}/favicon.svg`, telephone: BUSINESS.phoneHref, email: BUSINESS.email,
+    logo: `${origin}/public/images/brand/logo-oficial.png`, telephone: BUSINESS.phoneHref, email: BUSINESS.email,
     address: { '@type': 'PostalAddress', streetAddress: BUSINESS.address, postalCode: '41400', addressLocality: 'Écija', addressRegion: 'Sevilla', addressCountry: 'ES' },
     geo: { '@type': 'GeoCoordinates', latitude: BUSINESS.coordinates.lat, longitude: BUSINESS.coordinates.lng },
     areaServed: [{ '@type': 'City', name: 'Écija' }, { '@type': 'AdministrativeArea', name: 'Comarca de Écija' }],

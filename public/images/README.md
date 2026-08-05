@@ -1,5 +1,17 @@
-# Imágenes de la cartera inicial
+# Imágenes del portal
 
-Estas imágenes proceden de anuncios oficiales de Inmobiliaria Noguera y corresponden a los inmuebles documentados en `FUENTES-INMUEBLES.md`.
+## Marca oficial (`brand/`)
 
-Se incluyen solo para la presentación y puesta en marcha del proyecto. Antes de publicar, la agencia debe autorizar su alojamiento y facilitar los originales en alta resolución. Desde la zona privada se pueden sustituir, ordenar y ampliar las galerías mediante Supabase Storage.
+| Archivo | Uso |
+|---|---|
+| `logo-noguera-cabecera-transparent.png` | Cabecera y pie públicos (logo oficial) |
+| `logo-noguera-admin-transparent.png` | Panel y login |
+| `logo-oficial.png` | Schema.org / Open Graph de marca |
+| `apple-touch-icon.png` | Icono iOS |
+| `favicon-32.png` | Favicon PNG |
+
+Origen: logo oficial de [inmobiliarianoguera.com](https://inmobiliarianoguera.com/wp-content/uploads/2014/11/logo-noguera-cabecera.gif).
+
+## Inmuebles
+
+Las fotografías de la carpeta raíz son material de demostración tomado de anuncios públicos. Antes del lanzamiento definitivo deben sustituirse por originales autorizados desde el panel `/admin`.

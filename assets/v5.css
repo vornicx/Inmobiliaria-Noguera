@@ -5,11 +5,12 @@
   --font-display: "Manrope", system-ui, sans-serif;
   --font-body: "DM Sans", system-ui, sans-serif;
   --font-serif: var(--font-display);
-  --v5-burgundy: #641f2b;
-  --v5-burgundy-deep: #3f1019;
-  --v5-burgundy-soft: #8b3545;
-  --v5-ochre: #c88a26;
-  --v5-ochre-light: #e7bb69;
+  --v5-burgundy: #991f36;
+  --v5-burgundy-deep: #7a1528;
+  --v5-burgundy-soft: #b33a50;
+  --v5-ochre: #d4a400; /* dorado legible en texto */
+  --v5-ochre-fill: #fecc02; /* amarillo oficial del logo */
+  --v5-ochre-light: #ffe066;
   --v5-cream: #f6f2eb;
   --v5-paper: #fffdf9;
   --v5-sand: #e7ded2;
@@ -52,7 +53,7 @@ a, button { -webkit-tap-highlight-color: transparent; }
 .public-shell .btn { min-height: 48px; border-radius: 8px; font-weight: 700; letter-spacing: -.01em; }
 .public-shell .btn-primary { background: var(--v5-burgundy); color: #fff; border-color: var(--v5-burgundy); }
 .public-shell .btn-primary:hover { background: var(--v5-burgundy-deep); border-color: var(--v5-burgundy-deep); }
-.public-shell .btn-accent { background: var(--v5-ochre); border-color: var(--v5-ochre); color: #241b10; }
+.public-shell .btn-accent { background: var(--v5-ochre-fill, var(--v5-ochre)); border-color: var(--v5-ochre-fill, var(--v5-ochre)); color: #241b10; }
 .public-shell .btn-light { background: #fff; color: var(--v5-burgundy-deep); border-color: #fff; }
 .public-shell .btn-outline { border-color: #cbbfb4; color: var(--v5-ink); background: transparent; }
 .public-shell .btn-outline:hover { border-color: var(--v5-burgundy); color: var(--v5-burgundy); }
@@ -68,16 +69,9 @@ a, button { -webkit-tap-highlight-color: transparent; }
 
 /* Brand */
 .brand { display: inline-flex; align-items: center; gap: 12px; color: var(--v5-burgundy-deep); }
-.brand-monogram { width: 45px; height: 45px; display: grid; place-items: center; flex: 0 0 auto; }
-.brand-monogram svg { width: 100%; height: 100%; overflow: visible; }
-.brand-monogram path { fill: currentColor; }
-.brand-monogram .brand-key { fill: none; stroke: var(--v5-ochre); stroke-width: 4; stroke-linecap: square; }
-.brand-copy { display: grid; gap: 0; line-height: 1; }
-.brand-copy strong { font-family: var(--font-display); font-size: 1.08rem; letter-spacing: .14em; font-weight: 800; }
-.brand-copy span { margin-top: 6px; font-size: .62rem; letter-spacing: .08em; color: currentColor; opacity: .68; }
+.brand-logo { display: block; height: 46px; width: auto; max-width: 186px; object-fit: contain; }
 .brand-light { color: #fff; }
-.brand-compact .brand-monogram { width: 38px; height: 38px; }
-.brand-compact .brand-copy strong { font-size: .95rem; }
+.brand-compact .brand-logo { height: 38px; max-width: 148px; }
 
 /* Header */
 .site-header { height: 82px; border-bottom: 1px solid transparent; transition: background .25s ease, border-color .25s ease, box-shadow .25s ease; }
@@ -166,7 +160,7 @@ a, button { -webkit-tap-highlight-color: transparent; }
 .public-shell .property-badges { top: 14px; left: 14px; gap: 7px; }
 .public-shell .badge { min-height: 28px; padding: 6px 10px; border-radius: 5px; font-size: .63rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
 .public-shell .badge-dark { background: rgba(63,16,25,.92); color: #fff; }
-.public-shell .badge-accent { background: var(--v5-ochre); color: #241b10; }
+.public-shell .badge-accent { background: var(--v5-ochre-fill, var(--v5-ochre)); color: #241b10; }
 .badge-availability.badge-reserved { background: #a45e19; color: #fff; }
 .badge-availability.badge-sold, .badge-availability.badge-rented { background: #55504d; color: #fff; }
 .public-shell .card-actions { top: 14px; right: 14px; gap: 7px; }
@@ -209,7 +203,7 @@ a, button { -webkit-tap-highlight-color: transparent; }
 .public-shell .journey-card::before { display: none; }
 .public-shell .journey-card:hover { background: rgba(255,255,255,.065); border-color: rgba(255,255,255,.32); }
 .public-shell .journey-index { position: static; align-self: flex-end; color: rgba(255,255,255,.48); }
-.journey-icon { width: 54px; height: 54px; display: grid; place-items: center; border-radius: 50%; background: var(--v5-ochre); color: #2e1a0b; }
+.journey-icon { width: 54px; height: 54px; display: grid; place-items: center; border-radius: 50%; background: var(--v5-ochre-fill, var(--v5-ochre)); color: #2e1a0b; }
 .journey-icon svg { width: 23px; height: 23px; }
 .public-shell .journey-card > div:last-child { position: static; }
 .public-shell .journey-card h3 { margin: 12px 0 20px; font-family: var(--font-display); font-size: clamp(1.65rem, 2.3vw, 2.6rem); font-weight: 700; line-height: 1.05; letter-spacing: -.04em; }
@@ -402,7 +396,7 @@ a, button { -webkit-tap-highlight-color: transparent; }
 .admin-nav { margin-top: 22px; gap: 5px; }
 .admin-nav a { min-height: 46px; padding: 0 13px; border-radius: 7px; color: rgba(255,255,255,.68); font-weight: 600; }
 .admin-nav a:hover { background: rgba(255,255,255,.06); color: #fff; }
-.admin-nav a.active { background: var(--v5-ochre); color: #2b180c; }
+.admin-nav a.active { background: var(--v5-ochre-fill, var(--v5-ochre)); color: #2b180c; }
 .admin-sidebar-foot .btn { color: rgba(255,255,255,.75); }
 .demo-pill { border-color: rgba(255,255,255,.18); background: rgba(255,255,255,.06); color: rgba(255,255,255,.72); }
 .admin-main { margin-left: 248px; }
@@ -491,8 +485,10 @@ a, button { -webkit-tap-highlight-color: transparent; }
 .admin-form-section h2 { font-family: var(--font-display); }
 .upload-zone { border-radius: 8px; }
 .login-page { font-family: var(--font-body); }
-.login-visual { background: linear-gradient(145deg, rgba(62,13,22,.93), rgba(62,13,22,.64)), url('/public/images/8631-chalet-urbanizacion.jpeg') center/cover; }
+.login-visual { background: linear-gradient(145deg, rgba(122,21,40,.93), rgba(153,31,54,.62)), url('/public/images/8631-chalet-urbanizacion.jpeg') center/cover; }
 .login-card h1 { font-family: var(--font-display); letter-spacing: -.04em; }
+.login-page .btn-primary { background: var(--v5-burgundy); border-color: var(--v5-burgundy); color: #fff; }
+.login-page .btn-primary:hover { background: var(--v5-burgundy-deep); border-color: var(--v5-burgundy-deep); }
 
 /* Final layout corrections after visual QA */
 .home-featured-grid .property-card:nth-child(n) { grid-column: auto !important; }
@@ -570,9 +566,7 @@ a, button { -webkit-tap-highlight-color: transparent; }
 @media (max-width: 760px) {
   body { font-size: 15px; }
   .site-header, .site-header .header-inner { height: 70px; }
-  .brand-monogram { width: 39px; height: 39px; }
-  .brand-copy strong { font-size: .95rem; }
-  .brand-copy span { font-size: .57rem; }
+  .brand-logo { height: 40px; max-width: 150px; }
   .v5-hero { min-height: 760px; }
   .v5-hero .hero-inner { min-height: 560px; padding-top: 90px; padding-bottom: 230px; align-items: center; }
   .v5-hero .hero-copy { width: 100%; }

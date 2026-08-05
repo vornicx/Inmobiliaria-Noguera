@@ -53,7 +53,7 @@ export default async function handler(req, res) {
 <link rel="canonical" href="${escapeHtml(canonical)}">
 <link rel="alternate" hreflang="es-ES" href="${escapeHtml(canonical)}">
 <link rel="alternate" hreflang="x-default" href="${escapeHtml(canonical)}">
-<meta name="theme-color" content="#3f1019">
+<meta name="theme-color" content="#991f36">
 <meta name="geo.region" content="ES-AN"><meta name="geo.placename" content="Écija"><meta name="ICBM" content="37.5409815, -5.0875463">
 <meta property="og:type" content="${route.type === 'guide' ? 'article' : 'website'}">
 <meta property="og:locale" content="es_ES"><meta property="og:site_name" content="Inmobiliaria Noguera">
@@ -61,7 +61,7 @@ export default async function handler(req, res) {
 <meta property="og:url" content="${escapeHtml(canonical)}"><meta property="og:image" content="${escapeHtml(image)}"><meta property="og:image:alt" content="${escapeHtml(route.h1)}">
 <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${escapeHtml(route.title)}"><meta name="twitter:description" content="${escapeHtml(route.description)}"><meta name="twitter:image" content="${escapeHtml(image)}">
 ${verification}
-<link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="icon" href="/public/images/brand/favicon-32.png" type="image/png" sizes="32x32"><link rel="apple-touch-icon" href="/public/images/brand/apple-touch-icon.png"><link rel="manifest" href="/manifest.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/styles.css"><link rel="stylesheet" href="/assets/premium.css"><link rel="stylesheet" href="/assets/v5.css"><link rel="stylesheet" href="/assets/v6.css"><link rel="stylesheet" href="/assets/seo.css">

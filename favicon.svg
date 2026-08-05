@@ -1,6 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="12" fill="#3f1019"/>
-  <path d="M14 14h36v36H14z" fill="none" stroke="#fffdf9" stroke-width="3"/>
-  <path d="M22 43V23h7l13 14V23h6v20h-7L28 29v14z" fill="#fffdf9"/>
-  <path d="M18 46h28" fill="none" stroke="#c88a26" stroke-width="3"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Inmobiliaria Noguera">
+  <rect width="64" height="64" rx="12" fill="#991f36"/>
+  <!-- house roof -->
+  <path d="M12 30 L32 12 L52 30 V50 H12 Z" fill="#991f36"/>
+  <path d="M12 30 L32 12 L52 30" fill="none" stroke="#fffdf9" stroke-width="0"/>
+  <!-- simplified house with IN inspired mark -->
+  <path d="M14 28 L32 12 L50 28 V50 H14 Z" fill="#7f1529"/>
+  <path d="M14 28 L32 12 L50 28" fill="#991f36"/>
+  <path d="M18 28h28v22H18z" fill="#991f36"/>
+  <!-- I -->
+  <rect x="22" y="30" width="6" height="16" rx="1" fill="#fffdf9"/>
+  <!-- N stylized 3d -->
+  <path d="M31 46V30h5.2l7.8 10.2V30H49v16h-5.2L36 35.8V46H31z" fill="#fffdf9"/>
+  <!-- gold base line -->
+  <rect x="14" y="52" width="36" height="3" rx="1" fill="#fecc02"/>
 </svg>

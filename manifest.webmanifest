@@ -3,7 +3,11 @@
   "short_name": "Noguera",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f5f1ea",
-  "theme_color": "#3f1019",
-  "icons": [{"src":"/favicon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+  "background_color": "#fffdf9",
+  "theme_color": "#991f36",
+  "icons": [
+    {"src":"/favicon.svg","sizes":"any","type":"image/svg+xml","purpose":"any"},
+    {"src":"/public/images/brand/favicon-32.png","sizes":"32x32","type":"image/png","purpose":"any"},
+    {"src":"/public/images/brand/apple-touch-icon.png","sizes":"180x180","type":"image/png","purpose":"any"}
+  ]
 }

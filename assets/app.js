@@ -141,9 +141,11 @@ function queryParams() { return new URLSearchParams(window.location.search); }
 function isAdminPath() { return getPath().startsWith('/admin'); }
 
 function logo({ light = false, compact = false } = {}) {
+  const src = compact
+    ? '/public/images/brand/logo-noguera-admin-transparent.png'
+    : '/public/images/brand/logo-noguera-cabecera-transparent.png';
   return `<span class="brand ${light ? 'brand-light' : ''} ${compact ? 'brand-compact' : ''}" aria-label="Inmobiliaria Noguera">
-    <span class="brand-monogram" aria-hidden="true"><svg viewBox="0 0 64 64" role="img"><path class="brand-arch" d="M11 52V28C11 17.5 19.5 9 30 9h23v43h-9V18H30c-5.5 0-10 4.5-10 10v24Z"/><path class="brand-n" d="M20 52V24h8l16 17V24h9v28h-8L29 35v17Z"/><path class="brand-key" d="M10 52h44"/></svg></span>
-    <span class="brand-copy"><strong>NOGUERA</strong><span>Inmobiliaria · Écija</span></span>
+    <img class="brand-logo" src="${src}" width="${compact ? 148 : 168}" height="${compact ? 55 : 54}" alt="Inmobiliaria Noguera" decoding="async">
   </span>`;
 }
 
@@ -156,7 +158,7 @@ function navLink(path, label) {
 
 
 function publicHeader() {
-  const home = getPath() === '/' && Boolean(localStorage.getItem('noguera-cookie-consent'));
+  const home = getPath() === '/';
   return `<header class="site-header ${home ? 'header-overlay' : 'header-solid'}" id="site-header"><div class="container header-inner">
     <a href="/" data-link class="brand-link">${logo({ light: home })}</a>
     <nav class="nav" aria-label="Navegación principal">
@@ -185,7 +187,7 @@ function publicFooter() {
       <div><h4>Servicios</h4><div class="footer-links"><a href="/valoracion-vivienda-ecija" data-link>Valorar vivienda</a><a href="/vender-vivienda-ecija" data-link>Vender en Écija</a><a href="/guias" data-link>Guías inmobiliarias</a><a href="/admin" data-link>Zona privada</a></div></div>
       <div><h4>Oficina</h4><div class="footer-links"><span>${esc(BUSINESS.address)}<br>${esc(BUSINESS.city)}</span><a href="tel:${BUSINESS.phoneHref}">${esc(BUSINESS.phone)}</a><a href="tel:${BUSINESS.mobileHref}">${esc(BUSINESS.mobile)}</a><a href="mailto:${BUSINESS.email}">${esc(BUSINESS.email)}</a><span>${esc(BUSINESS.hours)}</span></div></div>
     </div>
-    <div class="container footer-bottom"><span>© ${new Date().getFullYear()} ${esc(BUSINESS.legalName)}</span><span><a href="/legal/aviso-legal" data-link>Aviso legal</a><a href="/legal/privacidad" data-link>Privacidad</a><a href="/legal/cookies" data-link>Cookies</a></span></div>
+    <div class="container footer-bottom"><span>© ${new Date().getFullYear()} ${esc(BUSINESS.legalName)}</span><span><a href="/legal/aviso-legal" data-link>Aviso legal</a><a href="/legal/privacidad" data-link>Privacidad</a><a href="/legal/cookies" data-link>Cookies</a><button type="button" class="footer-cookie-btn" data-action="cookies-reset">Preferencias</button></span></div>
   </footer>`;
 }
 
@@ -196,13 +198,28 @@ function publicLayout(content) {
   const detailPath = /^\/inmuebles\/[^/]+$/.test(getPath());
   const seoPath = Boolean(getSeoPage(getPath()));
   const whatsapp = (detailPath || cookieOpen || seoPath) ? '' : `<a class="whatsapp-float" href="https://wa.me/${BUSINESS.whatsapp}?text=${encodeURIComponent('Hola, quisiera información sobre un inmueble de Inmobiliaria Noguera.')}" target="_blank" rel="noopener" aria-label="Contactar por WhatsApp"><span>${icons.phone}</span><strong>WhatsApp</strong></a>`;
-  return `<div class="public-shell ${shellClass} ${cookieOpen ? 'cookie-open' : ''}">${publicHeader()}<main id="main">${cookieBanner()}${content}</main>${publicFooter()}${whatsapp}</div>`;
+  return `<div class="public-shell ${shellClass} ${cookieOpen ? 'cookie-open' : ''}">${publicHeader()}<main id="main">${content}</main>${publicFooter()}${cookieBanner()}${whatsapp}</div>`;
 }
 
 
 function cookieBanner() {
   if (localStorage.getItem('noguera-cookie-consent')) return '';
-  return `<aside class="cookie-banner" role="region" aria-label="Preferencias de cookies"><div class="container cookie-inner"><div class="cookie-copy"><strong>Tu privacidad, sin rodeos</strong><p>Usamos cookies necesarias para el funcionamiento. Las analíticas solo se activarán si las aceptas.</p></div><div class="cookie-actions"><button class="btn btn-primary btn-sm" data-action="cookies-accept">Aceptar analíticas</button><button class="btn btn-outline btn-sm" data-action="cookies-essential">Solo necesarias</button><a href="/legal/cookies" data-link>Ver detalles</a></div></div></aside>`;
+  return `<aside class="cookie-banner" role="dialog" aria-modal="false" aria-label="Preferencias de cookies" aria-live="polite">
+    <div class="container cookie-inner">
+      <div class="cookie-copy">
+        <img class="cookie-brand" src="/public/images/brand/logo-noguera-cabecera-transparent.png" width="120" height="39" alt="" decoding="async">
+        <div>
+          <strong>Cookies y privacidad</strong>
+          <p>Usamos cookies técnicas para el funcionamiento del sitio. Las analíticas (Google Analytics) solo se activan si las aceptas. Puedes cambiar tu elección cuando quieras.</p>
+        </div>
+      </div>
+      <div class="cookie-actions">
+        <button class="btn btn-primary btn-sm" type="button" data-action="cookies-accept">Aceptar todas</button>
+        <button class="btn btn-outline btn-sm" type="button" data-action="cookies-essential">Solo necesarias</button>
+        <a href="/legal/cookies" data-link>Política de cookies</a>
+      </div>
+    </div>
+  </aside>`;
 }
 
 
@@ -497,14 +514,17 @@ const legalCopy = {
   },
   cookies: {
     eyebrow: 'Preferencias', title: 'Política de cookies',
-    body: `<h2>1. Qué son las cookies</h2><p>Son pequeños archivos que un sitio puede guardar en tu dispositivo para recordar información o medir el uso de la web.</p><h2>2. Cookies utilizadas</h2><h3>Técnicas</h3><p>Son necesarias para funciones como navegación, favoritos guardados en el dispositivo, sesión privada y preferencias de privacidad.</p><h3>Analíticas</h3><p>Solo deben activarse con consentimiento previo. Google Analytics 4 solo se carga cuando existe un identificador configurado y el visitante acepta expresamente las cookies analíticas.</p><h2>3. Gestión del consentimiento</h2><p>Puedes aceptar o rechazar las cookies no necesarias desde el aviso inicial. La elección queda guardada en el navegador. Para revocarla, elimina los datos del sitio desde la configuración del navegador.</p><h2>4. Configuración antes del lanzamiento</h2><p>Si se añade Google Analytics, Meta Pixel, mapas incrustados u otra tecnología de terceros, deberán actualizarse esta política, el inventario de cookies y el mecanismo de bloqueo previo.</p>`
+    body: `<h2>1. Qué son las cookies</h2><p>Son pequeños archivos que un sitio puede guardar en tu dispositivo para recordar información o medir el uso de la web.</p><h2>2. Cookies utilizadas</h2><h3>Técnicas (siempre activas)</h3><p>Necesarias para navegación, favoritos y búsquedas guardadas en el dispositivo, sesión privada del panel y recordar tu preferencia de privacidad (<code>noguera-cookie-consent</code>).</p><h3>Analíticas (opcionales)</h3><p>Google Analytics 4 solo se carga cuando existe un identificador configurado (<code>GA_MEASUREMENT_ID</code>) y el visitante acepta expresamente las cookies analíticas. Mide páginas vistas y eventos de contacto sin cargar scripts de terceros hasta el consentimiento.</p><h2>3. Gestión del consentimiento</h2><p>Puedes aceptar o rechazar las cookies no necesarias desde el aviso inicial o desde esta página. La elección se guarda en tu navegador y puedes cambiarla en cualquier momento.</p><div class="cookie-manage-panel"><strong>Tu preferencia actual</strong><p data-cookie-status></p><div class="cookie-manage-actions"><button class="btn btn-primary btn-sm" type="button" data-action="cookies-accept">Aceptar analíticas</button><button class="btn btn-outline btn-sm" type="button" data-action="cookies-essential">Solo necesarias</button><button class="btn btn-ghost btn-sm" type="button" data-action="cookies-reset">Volver a mostrar el aviso</button></div></div><h2>4. Proveedores y transferencia</h2><p>Si se activa Google Analytics, Google puede tratar datos de uso según su política. La configuración por defecto anonimiza la IP y no envía página vista hasta el consentimiento.</p><h2>5. Actualizaciones</h2><p>Si se añaden Meta Pixel, mapas embebidos automáticos u otra tecnología de terceros, se actualizarán esta política, el inventario de cookies y el bloqueo previo al consentimiento.</p>`
   }
 };
 
 function legalView(slug) {
   const page = legalCopy[slug] || legalCopy['aviso-legal'];
   updateMeta({ title: `${page.title} · Inmobiliaria Noguera`, description: `Información sobre ${page.title.toLowerCase()} de Inmobiliaria Noguera.` });
-  return publicLayout(`${pageHero({eyebrow:page.eyebrow,title:page.title,text:'Última actualización: agosto de 2026.'})}<section class="section-sm"><div class="container legal-content">${page.body}</div></section>`);
+  const consent = localStorage.getItem('noguera-cookie-consent');
+  const consentLabel = consent === 'analytics' ? 'Analíticas aceptadas' : consent === 'essential' ? 'Solo cookies necesarias' : 'Sin elección registrada';
+  const body = page.body.replace('<p data-cookie-status></p>', `<p data-cookie-status>${consentLabel}</p>`);
+  return publicLayout(`${pageHero({eyebrow:page.eyebrow,title:page.title,text:'Última actualización: agosto de 2026.'})}<section class="section-sm"><div class="container legal-content">${body}</div></section>`);
 }
 
 function adminNavLink(path, label, icon) {
@@ -715,10 +735,11 @@ async function renderRoute({ scroll = true } = {}) {
 
   app.innerHTML = html;
   app.querySelectorAll('form[data-form="mortgage"]').forEach(calculateMortgage);
-  if (scroll) window.scrollTo({top:0, behavior:'instant'});
+  if (scroll) window.scrollTo({ top: 0, behavior: 'instant' });
   updateCounts();
   setupHeaderScroll();
   injectRouteSchema();
+  document.documentElement.dataset.cookieConsent = localStorage.getItem('noguera-cookie-consent') || '';
   loadAnalytics();
 }
 
@@ -775,13 +796,35 @@ function loadAnalytics() {
   const pageLocation = `${window.location.origin}${window.location.pathname}${window.location.search}`;
   if (!window.__nogueraAnalyticsLoaded) {
     window.__nogueraAnalyticsLoaded = true;
-    const src=document.createElement('script'); src=`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(state.config.gaMeasurementId)}`; src.async=true; document.head.appendChild(src);
-    window.dataLayer=window.dataLayer||[]; window.gtag=function(){window.dataLayer.push(arguments);}; window.gtag('js',new Date()); window.gtag('config',state.config.gaMeasurementId,{anonymize_ip:true,send_page_view:false});
+    const script = document.createElement('script');
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(state.config.gaMeasurementId)}`;
+    script.async = true;
+    document.head.appendChild(script);
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function gtag() { window.dataLayer.push(arguments); };
+    window.gtag('js', new Date());
+    window.gtag('config', state.config.gaMeasurementId, { anonymize_ip: true, send_page_view: false });
   }
-  if (window.__nogueraLastTrackedPage !== pageLocation) {
+  if (window.__nogueraLastTrackedPage !== pageLocation && typeof window.gtag === 'function') {
     window.__nogueraLastTrackedPage = pageLocation;
-    trackEvent('page_view',{page_title:document.title,page_location:pageLocation,page_path:`${window.location.pathname}${window.location.search}`});
+    trackEvent('page_view', { page_title: document.title, page_location: pageLocation, page_path: `${window.location.pathname}${window.location.search}` });
   }
+}
+
+function setCookieConsent(value) {
+  localStorage.setItem('noguera-cookie-consent', value);
+  document.documentElement.dataset.cookieConsent = value;
+  if (value === 'analytics') {
+    if (state.config?.gaMeasurementId) {
+      toast('Cookies analíticas activadas.', 'success');
+      loadAnalytics();
+    } else {
+      toast('Preferencia guardada. La analítica se activará cuando esté configurada.', 'success');
+    }
+  } else {
+    toast('Solo se usarán cookies necesarias.', 'success');
+  }
+  renderRoute({ scroll: false });
 }
 
 function openGallery(index = 0) {
@@ -825,7 +868,9 @@ async function handleAction(button, event) {
   if (action === 'close-modal') closeModal();
   if (action === 'gallery-prev') { state.gallery.index = (state.gallery.index-1+state.gallery.images.length)%state.gallery.images.length; renderGalleryModal(); }
   if (action === 'gallery-next') { state.gallery.index = (state.gallery.index+1)%state.gallery.images.length; renderGalleryModal(); }
-  if (action === 'cookies-accept' || action === 'cookies-essential') { localStorage.setItem('noguera-cookie-consent', action==='cookies-accept'?'analytics':'essential'); renderRoute({scroll:false}); }
+  if (action === 'cookies-accept') { setCookieConsent('analytics'); return; }
+  if (action === 'cookies-essential') { setCookieConsent('essential'); return; }
+  if (action === 'cookies-reset') { localStorage.removeItem('noguera-cookie-consent'); document.documentElement.dataset.cookieConsent = ''; renderRoute({ scroll: false }); toast('Puedes volver a elegir tus preferencias de cookies.'); return; }
   if (action === 'open-filters') document.querySelector('#catalog-filters')?.classList.add('open');
   if (action === 'close-filters') document.querySelector('#catalog-filters')?.classList.remove('open');
   if (action === 'clear-filters') navigate('/inmuebles');

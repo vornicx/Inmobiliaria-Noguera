@@ -1,10 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-labelledby="t d">
-  <title id="t">Fotografía pendiente</title><desc id="d">Marcador visual de Inmobiliaria Noguera para inmuebles sin fotografía publicada.</desc>
-  <rect width="1200" height="800" fill="#eee7de"/>
-  <path d="M0 620 260 430l160 120 245-220 535 420v50H0Z" fill="#ded3c6"/>
-  <path d="M375 525V350c0-88 71-159 159-159h286v334h-74V265H534c-47 0-85 38-85 85v175Z" fill="#6a2633" opacity=".16"/>
-  <path d="M448 525V303h66l159 161V303h74v222h-66L522 364v161Z" fill="#6a2633" opacity=".22"/>
-  <rect x="420" y="590" width="360" height="4" rx="2" fill="#c18a36"/>
-  <text x="600" y="655" text-anchor="middle" font-family="Arial, sans-serif" font-size="30" font-weight="700" fill="#4d2630">INMOBILIARIA NOGUERA</text>
-  <text x="600" y="700" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" fill="#7a6f68">Fotografía pendiente de publicación</text>
+  <title id="t">Fotografía pendiente</title>
+  <desc id="d">Marcador visual de Inmobiliaria Noguera para inmuebles sin fotografía publicada.</desc>
+  <rect width="1200" height="800" fill="#f3ebe3"/>
+  <path d="M0 620 260 430l160 120 245-220 535 420v50H0Z" fill="#e2d6ca"/>
+  <!-- monograma inspirado en el logo oficial -->
+  <path d="M470 250 L600 145 L730 250 V500 H470 Z" fill="#991f36"/>
+  <path d="M490 268 H710 V500 H490 Z" fill="#7a1528"/>
+  <rect x="530" y="310" width="42" height="120" rx="4" fill="#fffdf9"/>
+  <path d="M595 430 V310 h36 l58 76 V310 h40 v120 h-36 l-58-76 V430 H595z" fill="#fffdf9"/>
+  <rect x="470" y="510" width="260" height="14" rx="3" fill="#fecc02"/>
+  <text x="600" y="600" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="700" fill="#7a1528" letter-spacing="2">INMOBILIARIA NOGUERA</text>
+  <text x="600" y="650" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="22" fill="#7a6f68">Fotografía pendiente de publicación</text>
 </svg>
