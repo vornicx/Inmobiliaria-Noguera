@@ -172,7 +172,17 @@ export class DataService {
       this.saveDemoProperties(this.getDemoProperties().filter((item) => item.id !== id));
       return true;
     }
-    await this.request(`/rest/v1/properties?id=eq.${encodeURIComponent(id)}`, { method: 'DELETE' }, { auth: true });
+    /* RLS no da error al bloquear un DELETE: simplemente no borra filas. Sin
+       pedir representación, el panel anunciaba "eliminado" aunque la política
+       lo hubiera impedido. Se comprueba que vuelva la fila borrada. */
+    const borradas = await this.request(
+      `/rest/v1/properties?id=eq.${encodeURIComponent(id)}`,
+      { method: 'DELETE' },
+      { auth: true, prefer: 'return=representation' }
+    );
+    if (!Array.isArray(borradas) || !borradas.length) {
+      throw new Error('No se ha eliminado el inmueble: tu usuario no tiene permiso para borrar.');
+    }
     return true;
   }
 

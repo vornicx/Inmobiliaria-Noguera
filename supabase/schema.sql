@@ -88,11 +88,23 @@ drop trigger if exists properties_set_updated_at on public.properties;
 create trigger properties_set_updated_at before update on public.properties
 for each row execute function public.set_updated_at();
 
-create or replace function public.is_admin()
+-- Dos capacidades distintas a propósito:
+--   is_staff() -> admin o agente: el trabajo diario (publicar y editar)
+--   is_admin() -> sólo admin: borrar y gestionar usuarios
+-- Sin esta separación un comercial podía ascenderse a administrador.
+create or replace function public.is_staff()
 returns boolean language sql stable security definer set search_path = public as $$
   select exists (
     select 1 from public.profiles
     where id = auth.uid() and role in ('admin', 'agent')
+  );
+$$;
+
+create or replace function public.is_admin()
+returns boolean language sql stable security definer set search_path = public as $$
+  select exists (
+    select 1 from public.profiles
+    where id = auth.uid() and role = 'admin'
   );
 $$;
 
@@ -103,7 +115,7 @@ alter table public.leads enable row level security;
 -- Perfiles: cada usuario ve su propio perfil; los administradores gestionan perfiles.
 drop policy if exists "profiles_self_read" on public.profiles;
 create policy "profiles_self_read" on public.profiles for select to authenticated
-using (id = auth.uid() or public.is_admin());
+using (id = auth.uid() or public.is_staff());
 
 drop policy if exists "profiles_admin_write" on public.profiles;
 create policy "profiles_admin_write" on public.profiles for all to authenticated
@@ -120,10 +132,13 @@ using (status = 'published');
 
 drop policy if exists "properties_auth_read" on public.properties;
 create policy "properties_auth_read" on public.properties for select to authenticated
-using (status = 'published' or public.is_admin());
+using (status = 'published' or public.is_staff());
 
 -- Postgres concede EXECUTE a PUBLIC por defecto, así que revocar sólo a anon
 -- no cierra nada: hay que revocar la concesión general primero.
+revoke execute on function public.is_staff() from public;
+revoke execute on function public.is_staff() from anon;
+grant execute on function public.is_staff() to authenticated, service_role;
 revoke execute on function public.is_admin() from public;
 revoke execute on function public.is_admin() from anon;
 grant execute on function public.is_admin() to authenticated;
@@ -131,12 +146,14 @@ grant execute on function public.is_admin() to service_role;
 
 -- Solo personal autorizado puede crear, actualizar o borrar inmuebles.
 drop policy if exists "properties_admin_insert" on public.properties;
-create policy "properties_admin_insert" on public.properties for insert to authenticated
-with check (public.is_admin());
+drop policy if exists "properties_staff_insert" on public.properties;
+create policy "properties_staff_insert" on public.properties for insert to authenticated
+with check (public.is_staff());
 
 drop policy if exists "properties_admin_update" on public.properties;
-create policy "properties_admin_update" on public.properties for update to authenticated
-using (public.is_admin()) with check (public.is_admin());
+drop policy if exists "properties_staff_update" on public.properties;
+create policy "properties_staff_update" on public.properties for update to authenticated
+using (public.is_staff()) with check (public.is_staff());
 
 drop policy if exists "properties_admin_delete" on public.properties;
 create policy "properties_admin_delete" on public.properties for delete to authenticated
@@ -153,12 +170,14 @@ with check (
 );
 
 drop policy if exists "leads_admin_read" on public.leads;
-create policy "leads_admin_read" on public.leads for select to authenticated
-using (public.is_admin());
+drop policy if exists "leads_staff_read" on public.leads;
+create policy "leads_staff_read" on public.leads for select to authenticated
+using (public.is_staff());
 
 drop policy if exists "leads_admin_update" on public.leads;
-create policy "leads_admin_update" on public.leads for update to authenticated
-using (public.is_admin()) with check (public.is_admin());
+drop policy if exists "leads_staff_update" on public.leads;
+create policy "leads_staff_update" on public.leads for update to authenticated
+using (public.is_staff()) with check (public.is_staff());
 
 drop policy if exists "leads_admin_delete" on public.leads;
 create policy "leads_admin_delete" on public.leads for delete to authenticated
@@ -175,12 +194,14 @@ create policy "property_images_public_read" on storage.objects for select to pub
 using (bucket_id = 'property-images');
 
 drop policy if exists "property_images_admin_insert" on storage.objects;
-create policy "property_images_admin_insert" on storage.objects for insert to authenticated
-with check (bucket_id = 'property-images' and public.is_admin());
+drop policy if exists "property_images_staff_insert" on storage.objects;
+create policy "property_images_staff_insert" on storage.objects for insert to authenticated
+with check (bucket_id = 'property-images' and public.is_staff());
 
 drop policy if exists "property_images_admin_update" on storage.objects;
-create policy "property_images_admin_update" on storage.objects for update to authenticated
-using (bucket_id = 'property-images' and public.is_admin());
+drop policy if exists "property_images_staff_update" on storage.objects;
+create policy "property_images_staff_update" on storage.objects for update to authenticated
+using (bucket_id = 'property-images' and public.is_staff());
 
 drop policy if exists "property_images_admin_delete" on storage.objects;
 create policy "property_images_admin_delete" on storage.objects for delete to authenticated
