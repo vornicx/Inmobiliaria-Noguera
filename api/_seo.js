@@ -78,15 +78,21 @@ export async function getPublicProperties() {
   const key = process.env.SUPABASE_ANON_KEY || '';
   if (!url || !key) return DEMO_PROPERTIES.filter((item) => item.status === 'published');
   try {
-    const response = await fetch(`${url}/rest/v1/properties?select=*&status=eq.published&order=featured.desc,updated_at.desc`, {
+    /* limit explícito: PostgREST aplica su propio tope por defecto, así que sin
+       esto la cartera se truncaría en silencio en cuanto crezca. */
+    const response = await fetch(`${url}/rest/v1/properties?select=*&status=eq.published&order=featured.desc,updated_at.desc&limit=2000`, {
       headers: { apikey: key, Authorization: `Bearer ${key}`, Accept: 'application/json' }
     });
     if (!response.ok) throw new Error(`Supabase ${response.status}`);
     const data = await response.json();
-    return Array.isArray(data) ? data : [];
+    if (!Array.isArray(data) || !data.length) throw new Error('cartera vacía');
+    return data;
   } catch (error) {
-    console.error('SEO property fetch failed:', error);
-    return [];
+    /* Devolver [] dejaba el HTML rastreable sin un solo inmueble ante cualquier
+       caída pasajera de Supabase, que es exactamente como se desindexa un
+       catálogo. Es preferible servir el respaldo que no servir nada. */
+    console.error('SEO property fetch failed, usando respaldo:', error);
+    return DEMO_PROPERTIES.filter((item) => item.status === 'published');
   }
 }
 
@@ -272,12 +278,22 @@ export function renderSsrContent(route, properties = []) {
     extra = `<div class="ssr-properties"><article class="ssr-property"><h2>${escapeHtml(price)}</h2><p>Ref. ${escapeHtml(p.reference)} · ${escapeHtml(p.zone || p.location)}</p><p>${escapeHtml(p.description || '')}</p><a href="/contacto">Solicitar información</a></article></div>`;
   } else if (route.type === 'guideHub') {
     extra = `<div class="ssr-links">${guideEntries().map(([path, guide]) => `<a href="${path}"><strong>${escapeHtml(guide.title)}</strong><br>${escapeHtml(guide.description)}</a>`).join('')}</div>`;
-  } else if (pageProperties.length) {
-    extra = `<div class="ssr-properties">${pageProperties.slice(0, 9).map(propertyLink).join('')}</div>`;
   }
+  /* El catálogo iba delante del artículo y con hasta 9 fichas, que diluye el
+     tema de la página y repite lo mismo en todas. El contenido propio va
+     primero; los inmuebles quedan al final, como mucho tres, y con una llamada
+     a la acción. En /inmuebles sí manda el listado, que es su contenido. */
+  const esCatalogo = route.path === '/inmuebles';
   if (page?.answer) extra = `<p><strong>Respuesta directa:</strong> ${escapeHtml(page.answer)}</p>${extra}`;
+  if (esCatalogo && pageProperties.length) {
+    extra += `<div class="ssr-properties">${pageProperties.slice(0, 24).map(propertyLink).join('')}</div>`;
+  }
   if (page?.sections?.length) extra += `<div>${page.sections.map(([title, text]) => `<section><h2>${escapeHtml(title)}</h2><p>${escapeHtml(text)}</p></section>`).join('')}</div>`;
   if (page?.faq?.length) extra += `<section><h2>Preguntas frecuentes</h2>${page.faq.map(([q, a]) => `<h3>${escapeHtml(q)}</h3><p>${escapeHtml(a)}</p>`).join('')}</section>`;
+  if (!esCatalogo && route.type !== 'property' && pageProperties.length) {
+    extra += `<section class="ssr-properties"><h2>Inmuebles relacionados</h2>${pageProperties.slice(0, 3).map(propertyLink).join('')}`
+      + `<p><a href="/valoracion-vivienda-ecija">Solicita una valoración</a> o <a href="/contacto">habla con Noguera</a>.</p></section>`;
+  }
   return `<div class="ssr-shell"><header class="ssr-header"><a href="/">Inmobiliaria Noguera</a><nav class="ssr-nav"><a href="/inmuebles">Inmuebles</a><a href="/vender-vivienda-ecija">Vender</a><a href="/guias">Guías</a><a href="/contacto">Contacto</a></nav></header><main id="main" class="ssr-main"><span>${escapeHtml(page?.eyebrow || 'Inmobiliaria Noguera')}</span><h1>${escapeHtml(route.h1)}</h1><p>${escapeHtml(route.intro)}</p>${extra}<div class="ssr-links">${usefulLinks.map((path) => `<a href="${escapeHtml(path)}">${escapeHtml(path.replace(/^\//, '').replaceAll('-', ' ') || 'Inicio')}</a>`).join('')}</div></main><footer class="ssr-footer">${escapeHtml(BUSINESS.name)} · ${escapeHtml(BUSINESS.address)}, ${escapeHtml(BUSINESS.city)} · ${escapeHtml(BUSINESS.phone)}</footer></div>`;
 }
 

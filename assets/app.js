@@ -366,6 +366,7 @@ function leadForm({ property = null, source = 'contact', compact = false, visit 
     <label class="form-field"><span>Correo electrónico <small>opcional</small></span><input class="input" type="email" name="email" autocomplete="email"></label>
     ${visit ? `<input type="hidden" name="interest" value="visita"><div class="field-pair"><label class="form-field"><span>Fecha preferida</span><input class="input" type="text" name="visit_date" inputmode="numeric" placeholder="dd/mm/aaaa" pattern="[0-3][0-9]/[0-1][0-9]/[0-9]{4}" aria-describedby="visit-date-help"><small id="visit-date-help" class="field-help">Formato: día/mes/año</small></label><label class="form-field"><span>Franja horaria</span><select class="select" name="visit_time"><option value="">Horario flexible</option><option>Mañana</option><option>Mediodía</option><option>Tarde</option></select></label></div>` : compact ? '<input type="hidden" name="interest" value="informacion">' : `<label class="form-field"><span>Motivo de la consulta</span><select class="select" name="interest"><option value="informacion">Solicitar información</option><option value="visita">Concertar una visita</option><option value="valoracion">Valorar mi inmueble</option><option value="financiacion">Consultar financiación</option></select></label>`}
     <label class="form-field"><span>Mensaje</span><textarea class="textarea" name="message" placeholder="${property ? `Consulta sobre la referencia ${esc(property.reference)}` : 'Cuéntanos qué necesitas'}">${propertyText}</textarea></label>
+    <div class="hp-field" aria-hidden="true"><label>No rellenes este campo<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
     <label class="form-check"><input type="checkbox" name="privacy" required><span>Acepto la <a href="/legal/privacidad" data-link>política de privacidad</a>.</span></label>
     <button class="btn btn-primary btn-wide" type="submit">${visit ? 'Solicitar visita' : property ? 'Solicitar información' : 'Enviar consulta'} ${icons.arrow}</button>
     <div data-form-message></div>
@@ -686,7 +687,7 @@ function faqView(items = []) {
 
 function seoLeadCard(page) {
   const valuation = ['/vender-vivienda-ecija','/valoracion-vivienda-ecija'].includes(getPath());
-  return `<aside class="seo-sidebar"><div class="seo-side-card"><span class="eyebrow">Habla con el equipo</span><h2>${valuation ? 'Solicita una primera valoración' : 'Cuéntanos qué necesitas'}</h2><p>${valuation ? 'Facilita los datos básicos del inmueble. El equipo te explicará el siguiente paso sin compromiso automático.' : 'Confirma disponibilidad, pide una visita o deja tus criterios de búsqueda.'}</p><form data-form="lead" data-source="seo-${attr(slugify(page.title))}"><div class="form-field"><label>Nombre y apellidos</label><input class="input" name="name" autocomplete="name" required></div><div class="form-field"><label>Teléfono</label><input class="input" name="phone" type="tel" autocomplete="tel" required></div><div class="form-field"><label>Correo electrónico</label><input class="input" name="email" type="email" autocomplete="email"></div><div class="form-field"><label>${valuation ? 'Datos del inmueble' : 'Mensaje'}</label><textarea class="textarea" name="message" required></textarea></div><input type="hidden" name="interest" value="${valuation ? 'valoracion' : 'informacion'}"><button class="btn btn-light" type="submit">Enviar consulta</button><div data-form-message></div></form></div><div class="seo-side-card light"><h3>También puedes contactar</h3><div class="seo-side-links"><a href="tel:${BUSINESS.phoneHref}">${esc(BUSINESS.phone)} <span>↗</span></a><a href="https://wa.me/${BUSINESS.whatsapp}" target="_blank" rel="noopener">WhatsApp <span>↗</span></a><a href="/contacto" data-link>Oficina y horario <span>→</span></a></div></div></aside>`;
+  return `<aside class="seo-sidebar"><div class="seo-side-card"><span class="eyebrow">Habla con el equipo</span><h2>${valuation ? 'Solicita una primera valoración' : 'Cuéntanos qué necesitas'}</h2><p>${valuation ? 'Facilita los datos básicos del inmueble. El equipo te explicará el siguiente paso sin compromiso automático.' : 'Confirma disponibilidad, pide una visita o deja tus criterios de búsqueda.'}</p><form data-form="lead" data-source="seo-${attr(slugify(page.title))}"><div class="form-field"><label>Nombre y apellidos</label><input class="input" name="name" autocomplete="name" required></div><div class="form-field"><label>Teléfono</label><input class="input" name="phone" type="tel" autocomplete="tel" required></div><div class="form-field"><label>Correo electrónico</label><input class="input" name="email" type="email" autocomplete="email"></div><div class="form-field"><label>${valuation ? 'Datos del inmueble' : 'Mensaje'}</label><textarea class="textarea" name="message" required></textarea></div><div class="hp-field" aria-hidden="true"><label>No rellenes este campo<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div><input type="hidden" name="interest" value="${valuation ? 'valoracion' : 'informacion'}"><button class="btn btn-light" type="submit">Enviar consulta</button><div data-form-message></div></form></div><div class="seo-side-card light"><h3>También puedes contactar</h3><div class="seo-side-links"><a href="tel:${BUSINESS.phoneHref}">${esc(BUSINESS.phone)} <span>↗</span></a><a href="https://wa.me/${BUSINESS.whatsapp}" target="_blank" rel="noopener">WhatsApp <span>↗</span></a><a href="/contacto" data-link>Oficina y horario <span>→</span></a></div></div></aside>`;
 }
 
 function seoPageView(page, path) {
@@ -795,6 +796,7 @@ async function renderRoute({ scroll = true } = {}) {
 
   app.innerHTML = html;
   associateFieldLabels(app);
+  app.querySelectorAll('form[data-form="lead"]').forEach((f) => { f.dataset.openedAt = String(Date.now()); });
   app.querySelectorAll('form[data-form="mortgage"]').forEach(calculateMortgage);
   if (scroll) window.scrollTo({ top: 0, behavior: 'instant' });
   updateCounts();
@@ -1124,7 +1126,22 @@ async function handleForm(form) {
     return;
   }
   if (type === 'lead') {
-    setBusy(true); const data = Object.fromEntries(new FormData(form).entries());
+    const data = Object.fromEntries(new FormData(form).entries());
+    /* Antispam por capas. No sustituye a un Turnstile en el servidor, pero
+       detiene a los bots ingenuos, que es de donde viene casi todo el ruido.
+       Se responde igual que en un envío correcto para no darles pistas. */
+    const fingido = () => { form.reset(); showMessage('Gracias. Hemos recibido tu consulta y te contactaremos lo antes posible.'); setBusy(false); };
+    if (String(data.website || '').trim()) return fingido();                    // trampa: sólo un bot rellena un campo oculto
+    const abierto = Number(form.dataset.openedAt || 0);
+    if (abierto && Date.now() - abierto < 3000) return fingido();               // nadie escribe un formulario en 3 s
+    try {
+      const previos = JSON.parse(localStorage.getItem('noguera-lead-envios') || '[]')
+        .filter((t) => Date.now() - t < 3600000);
+      if (previos.length >= 5) { showMessage('Has enviado varias consultas seguidas. Escríbenos por teléfono o WhatsApp y te atendemos al momento.', 'error'); return; }
+      localStorage.setItem('noguera-lead-envios', JSON.stringify([...previos, Date.now()]));
+    } catch (_) { /* sin localStorage no se bloquea el envío legítimo */ }
+
+    setBusy(true);
     try {
       const visitNote = data.visit_date ? `\nFecha preferida: ${data.visit_date}${data.visit_time ? ` · ${data.visit_time}` : ''}` : '';
       await service.createLead({ name:data.name, phone:data.phone, email:data.email||null, interest:data.interest||'informacion', message:`${data.message||''}${visitNote}`.trim(), source:form.dataset.source||'web', property_id:form.dataset.propertyId||null, property_ref:form.dataset.propertyRef||null });

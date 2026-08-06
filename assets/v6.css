@@ -1050,3 +1050,14 @@ body.cookie-open .footer {
 /* —— Acceso al comparador, que hasta ahora no existía en ninguna parte. —— */
 .header-compare { position: relative; }
 .mobile-menu-tools a svg { flex: 0 0 auto; }
+
+/* Trampa antispam: fuera de la vista y del foco, pero sin display:none, que
+   algunos bots detectan y esquivan. */
+.hp-field {
+  position: absolute !important;
+  left: -9999px !important;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
