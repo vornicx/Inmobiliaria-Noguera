@@ -71,8 +71,13 @@ create table if not exists public.leads (
   created_at timestamptz not null default now()
 );
 
+-- search_path fijo: sin él la función es secuestrable creando objetos en un
+-- esquema que preceda en la ruta de búsqueda (aviso del linter de Supabase).
 create or replace function public.set_updated_at()
-returns trigger language plpgsql as $$
+returns trigger language plpgsql
+security invoker
+set search_path = ''
+as $$
 begin
   new.updated_at = now();
   return new;
@@ -105,9 +110,24 @@ create policy "profiles_admin_write" on public.profiles for all to authenticated
 using (public.is_admin()) with check (public.is_admin());
 
 -- Cualquier visitante puede leer únicamente inmuebles publicados.
+-- Se separa por rol a propósito: así el visitante anónimo no necesita
+-- is_admin(), y se le puede retirar el permiso de ejecución (abajo) para no
+-- exponer la función en /rest/v1/rpc/is_admin.
 drop policy if exists "properties_public_read" on public.properties;
-create policy "properties_public_read" on public.properties for select to anon, authenticated
+drop policy if exists "properties_anon_read" on public.properties;
+create policy "properties_anon_read" on public.properties for select to anon
+using (status = 'published');
+
+drop policy if exists "properties_auth_read" on public.properties;
+create policy "properties_auth_read" on public.properties for select to authenticated
 using (status = 'published' or public.is_admin());
+
+-- Postgres concede EXECUTE a PUBLIC por defecto, así que revocar sólo a anon
+-- no cierra nada: hay que revocar la concesión general primero.
+revoke execute on function public.is_admin() from public;
+revoke execute on function public.is_admin() from anon;
+grant execute on function public.is_admin() to authenticated;
+grant execute on function public.is_admin() to service_role;
 
 -- Solo personal autorizado puede crear, actualizar o borrar inmuebles.
 drop policy if exists "properties_admin_insert" on public.properties;

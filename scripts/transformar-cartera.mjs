@@ -56,10 +56,32 @@ const tituloLimpio = (s) => {
     .trim();
 };
 
+/* El sitio de origen sirve entidades HTML (&#8230;, &#8211;) que sin
+   descodificar se publicarían tal cual en la ficha. */
+const ENTIDADES = { '&#8230;': '...', '&#8211;': '-', '&#8212;': '-', '&amp;': '&',
+  '&quot;': '"', '&#039;': "'", '&apos;': "'", '&nbsp;': ' ', '&hellip;': '...', '&ndash;': '-' };
+const desescapa = (v) => typeof v === 'string'
+  ? v.replace(/&#?\w+;/g, (m) => ENTIDADES[m] ?? m).replace(/\s{2,}/g, ' ').trim()
+  : v;
+
+/* Los valores vienen como '17m2', '78.30', '3.000m2', '6420m2'. Quitar todo lo
+   que no sea dígito conservaba el 2 de "m2" (17 -> 172) y borrar los puntos
+   convertía 78.30 en 7830. Se retira primero la unidad, y el punto sólo se
+   trata como separador de miles cuando le siguen exactamente tres dígitos. */
 const num = (s) => {
-  if (!s) return null;
-  const limpio = String(s).replace(/\./g, '').replace(',', '.').replace(/[^\d.]/g, '');
-  const n = Number(limpio);
+  if (s === null || s === undefined) return null;
+  let t = String(s).toLowerCase()
+    .replace(/m\s*(?:2|²)/g, ' ')
+    .replace(/metros?(?:\s+cuadrados?)?/g, ' ')
+    .replace(/[€$]/g, ' ')
+    .trim();
+  const soloNumero = t.match(/-?[\d.,]+/);
+  if (!soloNumero) return null;
+  t = soloNumero[0];
+  t = t.replace(/\.(?=\d{3}(?:\D|$))/g, '');   // 3.000 -> 3000
+  t = t.replace(/,(?=\d{3}(?:\D|$))/g, '');    // 1,250 -> 1250
+  t = t.replace(',', '.');                     // decimal español
+  const n = Number(t);
   return Number.isFinite(n) && n > 0 ? n : null;
 };
 
@@ -97,12 +119,17 @@ const caracteristicas = (v) => (Array.isArray(v) ? v : String(v || "").split(/[\
 
 const salida = [];
 const descartes = [];
+const erratas = [];
 
 for (const x of cruda) {
   const precio = num(x.precio);
   const tipo = tipoDe(x.titulo, x.descripcion);
   const esSuelo = ['solar', 'parcela_rustica', 'parcela_urbana'].includes(tipo);
-  const sup = num(x.sup);
+  let sup = num(x.sup);
+  /* IMPLAUSIBLE: la web de origen tiene erratas de tecleo (p.ej. '1.5002' donde
+     la descripción dice 1500 m²). No se adivina el valor: se descarta para que
+     la ficha muestre "Consultar" en vez de una superficie absurda. */
+  if (sup !== null && sup < 5) { erratas.push({ ref: x.ref, valor: x.sup, titulo: x.titulo }); sup = null; }
 
   if (!precio) { descartes.push({ ref: x.ref, motivo: 'sin precio', titulo: x.titulo }); continue; }
   /* Muchas fichas no llevan la referencia en el slug. Se deriva del propio
@@ -115,9 +142,9 @@ for (const x of cruda) {
     id: `noguera-${ref}`,
     reference: String(ref),
     slug,
-    title: tituloLimpio(x.titulo),
-    short_description: (x.resumen || '').slice(0, 240),
-    description: (x.descripcion || x.resumen || '').trim(),
+    title: desescapa(tituloLimpio(x.titulo)),
+    short_description: desescapa((x.resumen || '').slice(0, 240)),
+    description: desescapa((x.descripcion || x.resumen || '').trim()),
     operation: (x.operacion || 'VENTA').toLowerCase() === 'alquiler' ? 'alquiler' : 'venta',
     property_type: tipo,
     price: precio,
@@ -184,8 +211,15 @@ ${salida.map((p) => `insert into public.properties
   ${arr(p.features)}, ${arr(p.images)}, ${q(p.image_fallback)}, ${q(p.source_url)},
   ${p.featured}, ${q(p.status)}, ${q(p.availability)}, ${q(p.agent_name)}, ${q(p.agent_phone)}, now())
  on conflict (reference) do update set
-  title = excluded.title, price = excluded.price, description = excluded.description,
-  images = excluded.images, availability = excluded.availability, updated_at = now();`).join('\n')}
+  title = excluded.title, short_description = excluded.short_description,
+  description = excluded.description, price = excluded.price,
+  operation = excluded.operation, property_type = excluded.property_type,
+  zone = excluded.zone, bedrooms = excluded.bedrooms, bathrooms = excluded.bathrooms,
+  area = excluded.area, plot_area = excluded.plot_area,
+  features = excluded.features, images = excluded.images,
+  image_fallback = excluded.image_fallback, availability = excluded.availability,
+  featured = excluded.featured,
+  updated_at = now();`).join('\n')}
 commit;
 `;
 
@@ -193,6 +227,10 @@ writeFileSync('seed-properties.sql', sql);
 writeFileSync('cartera-web.json', JSON.stringify(salida, null, 1));
 
 console.log(`inmuebles válidos: ${salida.length}`);
+if (erratas.length) {
+  console.log(`superficies imposibles en el origen (descartadas): ${erratas.length}`);
+  erratas.forEach((e) => console.log(`   ref ${e.ref}: "${e.valor}" · ${String(e.titulo).slice(0, 46)}`));
+}
 console.log(`descartados: ${descartes.length}`);
 descartes.slice(0, 8).forEach((d) => console.log(`   ${d.motivo}: ${(d.titulo || '').slice(0, 50)}`));
 console.log(`\noperación: venta ${salida.filter((p) => p.operation === 'venta').length} · alquiler ${salida.filter((p) => p.operation === 'alquiler').length}`);

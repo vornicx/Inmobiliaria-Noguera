@@ -262,6 +262,14 @@ export function buildJsonLd(route, origin = SITE_ORIGIN) {
   return { '@context': 'https://schema.org', '@graph': graph };
 }
 
+/* La mayoría de fichas no traen número de referencia del origen y el suyo se
+   derivó del slug; enseñarlo daría "Ref. fantastico-chalet-en-venta-con-...".
+   Sólo se muestra cuando es una referencia real de Noguera. */
+function refVisible(property) {
+  const r = String(property?.reference || '').trim();
+  return /^\d{1,8}$/.test(r) ? r : '';
+}
+
 function propertyLink(property) {
   const price = Number(property.price || 0) > 0 ? `${new Intl.NumberFormat('es-ES').format(property.price)} €` : 'Consultar';
   return `<article class="ssr-property"><h2>${escapeHtml(property.title)}</h2><p>${escapeHtml(property.zone || property.location || 'Écija')} · ${escapeHtml(price)}</p><a href="/inmuebles/${escapeHtml(property.slug)}">Ver inmueble</a></article>`;
@@ -275,7 +283,7 @@ export function renderSsrContent(route, properties = []) {
   if (route.type === 'property') {
     const p = route.property;
     const price = Number(p.price || 0) > 0 ? `${new Intl.NumberFormat('es-ES').format(p.price)} €` : 'Precio a consultar';
-    extra = `<div class="ssr-properties"><article class="ssr-property"><h2>${escapeHtml(price)}</h2><p>Ref. ${escapeHtml(p.reference)} · ${escapeHtml(p.zone || p.location)}</p><p>${escapeHtml(p.description || '')}</p><a href="/contacto">Solicitar información</a></article></div>`;
+    extra = `<div class="ssr-properties"><article class="ssr-property"><h2>${escapeHtml(price)}</h2><p>${refVisible(p) ? `Ref. ${escapeHtml(refVisible(p))} · ` : ''}${escapeHtml(p.zone || p.location)}</p><p>${escapeHtml(p.description || '')}</p><a href="/contacto">Solicitar información</a></article></div>`;
   } else if (route.type === 'guideHub') {
     extra = `<div class="ssr-links">${guideEntries().map(([path, guide]) => `<a href="${path}"><strong>${escapeHtml(guide.title)}</strong><br>${escapeHtml(guide.description)}</a>`).join('')}</div>`;
   }
