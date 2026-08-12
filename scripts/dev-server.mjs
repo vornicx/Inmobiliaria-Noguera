@@ -1,12 +1,14 @@
 import http from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
-import { extname, join, normalize } from 'node:path';
+import { extname, join, normalize, resolve } from 'node:path';
 import render from '../api/render.js';
 import sitemap from '../api/sitemap.js';
 import config from '../api/config.js';
 import indexnow from '../api/indexnow.js';
 
-const root = new URL('..', import.meta.url).pathname;
+const projectRoot = new URL('..', import.meta.url).pathname;
+const useDist = process.argv.includes('--dist');
+const root = useDist ? resolve(projectRoot, 'dist') : projectRoot;
 const port = Number(process.env.PORT || 4173);
 const types = {'.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.mjs':'text/javascript; charset=utf-8','.svg':'image/svg+xml','.jpg':'image/jpeg','.jpeg':'image/jpeg','.png':'image/png','.webp':'image/webp','.json':'application/json; charset=utf-8','.txt':'text/plain; charset=utf-8','.webmanifest':'application/manifest+json'};
 
@@ -37,4 +39,4 @@ const server = http.createServer(async (req, rawRes) => {
   req.query={...Object.fromEntries(url.searchParams), path:url.pathname.replace(/^\//,'')};
   return render(req,res);
 });
-server.listen(port, () => console.log(`Noguera SEO/GEO: http://localhost:${port}`));
+server.listen(port, () => console.log(`Noguera SEO/GEO (${useDist ? 'dist' : 'source'}): http://localhost:${port}`));
