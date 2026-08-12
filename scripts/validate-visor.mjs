@@ -76,6 +76,17 @@ for (const selector of ['#cookie-root', '.whatsapp-float']) {
     errors.push(`${selector} (z-index ${layer}) queda por encima del visor (z-index ${galleryZ}) y volvería a bloquear sus botones.`);
   }
 }
+/* #modal-root está siempre en el documento, vacío casi todo el tiempo y con la
+   z más alta. Si captura el puntero y alguna hoja lo estira a pantalla
+   completa, se traga los toques de toda la web, empezando por las fotos que
+   abren el visor. El puntero lo recibe el fondo del modal, no el contenedor. */
+if (!/pointer-events\s*:\s*none/.test(ruleFor('#modal-root'))) {
+  errors.push('#modal-root no fija pointer-events: none: vacío y por encima de todo, interceptaría los toques de la página (las fotos dejarían de abrir el visor).');
+}
+if (!/pointer-events\s*:\s*auto/.test(ruleFor('.modal-backdrop'))) {
+  errors.push('.modal-backdrop no fija pointer-events: auto: el visor abierto no recibiría clics.');
+}
+
 for (const selector of ['.modal-close', '.modal-nav']) {
   const rule = ruleFor(selector);
   if (!/pointer-events\s*:\s*auto/.test(rule)) errors.push(`${selector} no fija pointer-events: auto.`);

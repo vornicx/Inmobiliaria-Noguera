@@ -55,7 +55,8 @@ del cliente.
 | La corrección publicada no llegaba al navegador | `/assets/*` pasa a `max-age=0, must-revalidate`; `api/render.js` versiona hojas y módulos con `?v=` y un `importmap` que evita mezclar un `app.js` nuevo con un `service.js` viejo |
 | “Ver N fotos” colocado respecto al documento | `.gallery` es `position: relative`, que es el ancestro que el botón absoluto necesitaba |
 | Foto caída con icono de imagen rota dentro del visor | La imagen del modal usa el mismo respaldo `onerror` que la cuadrícula |
-| Regresiones silenciosas | `scripts/validate-visor.mjs`, dentro de `npm run check`: delegación en `document`, acciones y teclas del visor, `#modal-root` por encima de cookies y WhatsApp, `pointer-events` de los controles, respaldo de imagen y caché de `/assets` |
+| `#modal-root` vacío tragándose los toques en móvil | `mobile.css` lo estira a `fixed; inset: 0`, y con la z más alta del sitio interceptaba **todos** los toques: no solo el visor, la web móvil entera dejaba de responder. El contenedor pasa a `pointer-events: none` y el puntero lo recibe `.modal-backdrop`, que solo existe con el visor abierto |
+| Regresiones silenciosas | `scripts/validate-visor.mjs`, dentro de `npm run check`: delegación en `document`, acciones y teclas del visor, `#modal-root` por encima de cookies y WhatsApp pero sin capturar el puntero, `pointer-events` de fondo y controles, respaldo de imagen y caché de `/assets` |
 
 Comprobado a 1440 × 900 y 390 × 844: abrir, siguiente, anterior, teclado,
 clic sobre la foto sin cerrar, cerrar, reabrir desde “Ver N fotos”, `Escape`,
