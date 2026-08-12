@@ -7,7 +7,7 @@ import { statSync } from 'node:fs';
    Esta marca cambia en cada despliegue y acompaña a la cabecera de
    revalidación de vercel.json. Hacen falta las dos cosas. */
 
-const ASSET_FILES = ['app.js', 'service.js', 'data.js', 'seo-data.js', 'styles.css', 'premium.css', 'v5.css', 'v6.css', 'seo.css'];
+const ASSET_FILES = ['app.js', 'service.js', 'data.js', 'seo-data.js', 'styles.css', 'premium.css', 'v5.css', 'v6.css', 'seo.css', 'mobile.css'];
 
 function localVersion() {
   try {
