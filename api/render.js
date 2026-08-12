@@ -79,6 +79,7 @@ ${STYLESHEETS.map((href) => `<link rel="stylesheet" href="${assetUrl(href)}">`).
 <div id="modal-root"></div>
 <div id="cookie-root"></div>
 <script type="module" src="${assetUrl('/assets/app.js')}"></script>
+<script type="module" src="${assetUrl('/assets/mobile.js')}"></script>
 </body></html>`;
 
   res.statusCode = route.status;
