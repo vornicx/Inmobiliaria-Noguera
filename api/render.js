@@ -2,7 +2,7 @@ import { SITE_ORIGIN } from '../assets/seo-data.js';
 import { absoluteUrl, buildJsonLd, escapeHtml, getPublicProperties, normalizePath, renderSsrContent, resolveRoute } from './_seo.js';
 import { assetUrl, moduleImportMap } from './assets.js';
 
-const STYLESHEETS = ['/assets/styles.css', '/assets/premium.css', '/assets/v5.css', '/assets/v6.css', '/assets/seo.css'];
+const STYLESHEETS = ['/assets/styles.css', '/assets/premium.css', '/assets/v5.css', '/assets/v6.css', '/assets/seo.css', '/assets/mobile.css'];
 const APP_MODULES = ['/assets/service.js', '/assets/data.js', '/assets/seo-data.js'];
 
 function queryObject(req) {
