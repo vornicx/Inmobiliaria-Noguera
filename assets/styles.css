@@ -252,7 +252,10 @@ input, select, textarea { color: var(--ink); }
 .detail-price { text-align: right; flex-shrink: 0; }
 .detail-price .price { font-size: clamp(2rem, 4vw, 3.4rem); }
 .detail-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; }
-.gallery { display: grid; grid-template-columns: 1.8fr 1fr; grid-template-rows: 250px 250px; gap: 10px; border-radius: var(--radius-lg); overflow: hidden; }
+/* "position: relative" no es decorativo: .gallery-more ("Ver N fotos") es
+   absoluto y, sin un ancestro posicionado, se colocaba respecto al documento.
+   El botón que abre el visor acababa flotando sobre contenido cualquiera. */
+.gallery { position: relative; display: grid; grid-template-columns: 1.8fr 1fr; grid-template-rows: 250px 250px; gap: 10px; border-radius: var(--radius-lg); overflow: hidden; }
 .gallery-item { position: relative; overflow: hidden; border: 0; padding: 0; background: #ddd; }
 .gallery-item:first-child { grid-row: span 2; }
 .gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: .4s ease; }

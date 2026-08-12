@@ -1,11 +1,11 @@
 {
   "name": "inmobiliaria-noguera",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "private": true,
   "description": "Portal inmobiliario, panel de gestión y arquitectura SEO/GEO para Inmobiliaria Noguera.",
   "scripts": {
     "dev": "node scripts/dev-server.mjs",
-    "check": "node --check assets/app.js && node --check assets/service.js && node --check assets/data.js && node --check assets/seo-data.js && node --check api/_seo.js && node --check api/render.js && node --check api/sitemap.js && node --check api/indexnow.js && node scripts/validate.mjs && node scripts/validate-seo.mjs && npm run build && node scripts/validate-deploy.mjs",
+    "check": "node --check assets/app.js && node --check assets/service.js && node --check assets/data.js && node --check assets/seo-data.js && node --check api/_seo.js && node --check api/assets.js && node --check api/render.js && node --check api/sitemap.js && node --check api/indexnow.js && node scripts/validate.mjs && node scripts/validate-seo.mjs && node scripts/validate-visor.mjs && npm run build && node scripts/validate-deploy.mjs",
     "build": "node scripts/build.mjs",
     "preview": "npm run build && node scripts/dev-server.mjs --dist"
   },

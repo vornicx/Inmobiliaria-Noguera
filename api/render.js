@@ -1,5 +1,9 @@
 import { SITE_ORIGIN } from '../assets/seo-data.js';
 import { absoluteUrl, buildJsonLd, escapeHtml, getPublicProperties, normalizePath, renderSsrContent, resolveRoute } from './_seo.js';
+import { assetUrl, moduleImportMap } from './assets.js';
+
+const STYLESHEETS = ['/assets/styles.css', '/assets/premium.css', '/assets/v5.css', '/assets/v6.css', '/assets/seo.css'];
+const APP_MODULES = ['/assets/service.js', '/assets/data.js', '/assets/seo-data.js'];
 
 function queryObject(req) {
   const result = { ...(req.query || {}) };
@@ -64,7 +68,8 @@ ${verification}
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="icon" href="/public/images/brand/favicon-32.png" type="image/png" sizes="32x32"><link rel="apple-touch-icon" href="/public/images/brand/apple-touch-icon.png"><link rel="manifest" href="/manifest.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/styles.css"><link rel="stylesheet" href="/assets/premium.css"><link rel="stylesheet" href="/assets/v5.css"><link rel="stylesheet" href="/assets/v6.css"><link rel="stylesheet" href="/assets/seo.css">
+${STYLESHEETS.map((href) => `<link rel="stylesheet" href="${assetUrl(href)}">`).join('')}
+<script type="importmap">${moduleImportMap(APP_MODULES)}</script>
 <script id="seo-schema" type="application/ld+json">${JSON.stringify(jsonLd).replace(/</g, '\\u003c')}</script>
 </head>
 <body>
@@ -73,7 +78,7 @@ ${verification}
 <div id="toast-region" class="toast-region" aria-live="assertive"></div>
 <div id="modal-root"></div>
 <div id="cookie-root"></div>
-<script type="module" src="/assets/app.js"></script>
+<script type="module" src="${assetUrl('/assets/app.js')}"></script>
 </body></html>`;
 
   res.statusCode = route.status;

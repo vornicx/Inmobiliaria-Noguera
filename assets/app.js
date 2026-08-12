@@ -941,7 +941,7 @@ function renderGalleryModal() {
     <button type="button" class="icon-btn modal-close" data-action="close-modal" aria-label="Cerrar galería">${icons.close}</button>
     <button type="button" class="icon-btn modal-nav modal-prev" data-action="gallery-prev" aria-label="Imagen anterior">${icons.arrowLeft}</button>
     <div class="modal gallery-modal" data-modal-content>
-      <img src="${attr(safeImage(images[index]))}" alt="Imagen ${index + 1} de ${images.length}" decoding="async">
+      <img src="${attr(safeImage(images[index]))}" ${imageErrorAttr(state.currentProperty)} alt="Imagen ${index + 1} de ${images.length}" decoding="async">
     </div>
     <button type="button" class="icon-btn modal-nav modal-next" data-action="gallery-next" aria-label="Imagen siguiente">${icons.arrowRight}</button>
     <div class="modal-counter" aria-live="polite">${index + 1} / ${images.length}</div>

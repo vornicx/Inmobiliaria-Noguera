@@ -41,6 +41,26 @@
 - Desbordamiento horizontal: 0 px.
 - Intersecciones entre tarjetas de portada y catálogo: 0.
 
+## Visor de imágenes de las fichas
+
+El visor se había corregido dos veces y el fallo reaparecía. La causa de la
+reaparición no estaba en el visor: `vercel.json` servía `/assets/*` como
+`immutable` durante un año y los archivos no llevan huella en el nombre, así
+que quien ya había visitado la web seguía ejecutando el `app.js` anterior a la
+corrección. Cada arreglo funcionaba en un navegador limpio y seguía roto en el
+del cliente.
+
+| Problema | Solución aplicada |
+|---|---|
+| La corrección publicada no llegaba al navegador | `/assets/*` pasa a `max-age=0, must-revalidate`; `api/render.js` versiona hojas y módulos con `?v=` y un `importmap` que evita mezclar un `app.js` nuevo con un `service.js` viejo |
+| “Ver N fotos” colocado respecto al documento | `.gallery` es `position: relative`, que es el ancestro que el botón absoluto necesitaba |
+| Foto caída con icono de imagen rota dentro del visor | La imagen del modal usa el mismo respaldo `onerror` que la cuadrícula |
+| Regresiones silenciosas | `scripts/validate-visor.mjs`, dentro de `npm run check`: delegación en `document`, acciones y teclas del visor, `#modal-root` por encima de cookies y WhatsApp, `pointer-events` de los controles, respaldo de imagen y caché de `/assets` |
+
+Comprobado a 1440 × 900 y 390 × 844: abrir, siguiente, anterior, teclado,
+clic sobre la foto sin cerrar, cerrar, reabrir desde “Ver N fotos”, `Escape`,
+liberación del scroll y foto caída servida como 404.
+
 ## Dependencias externas pendientes
 
 El código no puede crear originales fotográficos que la inmobiliaria no haya entregado. Las marcas de agua y la compresión pertenecen a las copias públicas existentes. Para el lanzamiento final deben sustituirse desde `/admin` por los archivos autorizados de Noguera.
