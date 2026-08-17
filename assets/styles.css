@@ -334,11 +334,17 @@ input, select, textarea { color: var(--ink); }
 
 /* Cookie banner: estilos finales en v6.css */
 
-#modal-root { position: relative; z-index: 200000; }
+/* El contenedor está siempre en el documento y vacío casi todo el tiempo, con
+   la z más alta del sitio. Si además ocupa la pantalla —mobile.css lo pone
+   fixed e inset:0—, se traga todos los toques y deja la web sin responder,
+   empezando por las fotos que abren el visor. Nunca debe recibir el puntero:
+   quien lo recibe es el fondo del modal, que solo existe con el visor abierto. */
+#modal-root { position: relative; z-index: 200000; pointer-events: none; }
 .modal-backdrop {
   position: fixed;
   inset: 0;
   z-index: 200000;
+  pointer-events: auto;
   background: rgba(20, 8, 12, .88);
   backdrop-filter: blur(8px);
   display: grid;
